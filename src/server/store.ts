@@ -134,7 +134,9 @@ export function saveMatch(input: unknown): Match {
     rounds: (raw.rounds ?? []).map((r) => ({ ...r, id: r.id || nanoid(8) })),
   });
   const prev = getContent().matches.get(m.id);
-  if (prev?.locked && m.locked) throw new StoreError("Match is locked; unlock it to edit");
+  if (prev?.locked) throw new StoreError("Match is locked; unlock it to edit");
+  // Lock state changes only through setMatchLocked.
+  if (prev) m.locked = prev.locked;
   db.prepare(
     "INSERT INTO matches (id, sort, data) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data",
   ).run(m.id, existingSort("matches", m.id) ?? nextSort("matches"), JSON.stringify(m));
@@ -152,6 +154,8 @@ export function setMatchLocked(id: string, locked: boolean): Match {
 }
 
 export function deleteMatch(id: string): void {
+  if (getContent().matches.get(id)?.locked)
+    throw new StoreError("Match is locked; unlock it to delete");
   db.prepare("DELETE FROM matches WHERE id = ?").run(id);
   changed();
 }

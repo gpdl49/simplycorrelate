@@ -10,6 +10,7 @@ import { config } from "./config";
  */
 
 const COOKIE = "sc_host";
+const SESSION_MAX_AGE_S = 60 * 60 * 24 * 7;
 
 function sign(value: string): string {
   return createHmac("sha256", config.sessionSecret).update(value).digest("base64url");
@@ -33,7 +34,8 @@ function pinSessionValid(c: Context): boolean {
   if (!issued || !sig) return false;
   const a = Buffer.from(sig);
   const b = Buffer.from(sign(issued));
-  return a.length === b.length && timingSafeEqual(a, b);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return false;
+  return Date.now() - Number(issued) < SESSION_MAX_AGE_S * 1000;
 }
 
 export function whoami(c: Context): {
@@ -73,7 +75,7 @@ export function pinLogin(c: Context, pin: string): boolean {
     httpOnly: true,
     sameSite: "Lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: SESSION_MAX_AGE_S,
   });
   return true;
 }

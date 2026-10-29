@@ -242,6 +242,9 @@ export function reduce(state: GameState, action: Action, ctx: Ctx): GameState {
     case "resumeTimer": {
       const live = state.live;
       if (!live || !("timer" in live) || !live.timer) throw new GameError("No timer");
+      if (action.type === "resumeTimer" && !timerActive(live)) {
+        throw new GameError("Nothing is in play");
+      }
       const timer =
         action.type === "pauseTimer" ? pauseT(live.timer, now) : resumeT(live.timer, now);
       return withLive(state, { ...live, timer } as Live);
@@ -289,6 +292,20 @@ export function reduce(state: GameState, action: Action, ctx: Ctx): GameState {
   }
 }
 
+/** Whether the live round is in a phase where its timer may run (stopped timers stay stopped). */
+function timerActive(live: Live): boolean {
+  switch (live.type) {
+    case "standard":
+      return false;
+    case "connection":
+    case "sequence":
+    case "wall":
+      return live.phase === "play";
+    case "vowels":
+      return live.started && !live.ended;
+  }
+}
+
 function onTimerExpired(state: GameState, ctx: Ctx): GameState {
   const live = state.live;
   if (!live || !("timer" in live) || !live.timer) return state;
@@ -322,17 +339,27 @@ function reduceStandard(
   switch (action.type) {
     case "standardGo": {
       if (action.index >= round.questionIds.length) throw new GameError("No such question");
+      if (action.index === live.index) return state;
       const done = markPlayed(state, round.questionIds[live.index]);
+      // Remember who was marked on each question so revisiting one can't double-award.
+      const marks = {
+        ...live.marks,
+        [live.index]: { awarded: live.awarded, penalised: live.penalised },
+      };
+      const prev = marks[action.index];
       return withLive(done, {
         ...live,
         index: action.index,
         revealed: false,
-        awarded: [],
-        penalised: [],
+        awarded: prev?.awarded ?? [],
+        penalised: prev?.penalised ?? [],
+        marks,
       } satisfies StandardLive);
     }
-    case "standardReveal":
-      return withLive(state, { ...live, revealed: action.revealed });
+    case "standardReveal": {
+      const next = action.revealed ? markPlayed(state, round.questionIds[live.index]) : state;
+      return withLive(next, { ...live, revealed: action.revealed });
+    }
     case "standardAward":
     case "standardPenalise": {
       if (!q) throw new GameError("Question missing");
@@ -402,6 +429,10 @@ function reduceConnection(
       return toSteal(state, { ...live, timer: stopT(live.timer, ctx.now) });
     case "steal": {
       if (live.phase !== "steal") throw new GameError("Not offering a steal");
+      if (action.teamId !== null) {
+        requireTeam(m, action.teamId);
+        if (action.teamId === live.teamId) throw new GameError("That team already answered");
+      }
       if (action.teamId === null || !action.correct) {
         return withLive(state, {
           ...live,
@@ -411,8 +442,7 @@ function reduceConnection(
           stealTeamId: action.teamId,
         });
       }
-      const teamId = requireTeam(m, action.teamId);
-      if (teamId === live.teamId) throw new GameError("That team already answered");
+      const teamId = action.teamId;
       return withLive(addScore(state, teamId, 1), {
         ...live,
         phase: "done",
@@ -552,6 +582,7 @@ function reduceVowels(
     }
     case "vowelsNext": {
       if (!cat) throw new GameError("No categories");
+      if (live.ended) throw new GameError("The round is over");
       const fresh = { revealed: false, buzzed: null, wrong: [], correctTeamId: null };
       if (live.clueIndex + 1 < cat.clues.length) {
         return withLive(state, { ...live, ...fresh, clueIndex: live.clueIndex + 1 });
@@ -572,6 +603,7 @@ function reduceVowels(
     }
     case "vowelsBuzz": {
       if (live.clueIndex < 0 || live.revealed) throw new GameError("No clue showing");
+      if (live.ended) throw new GameError("The round is over");
       if (action.teamId !== null) {
         requireTeam(m, action.teamId);
         if (live.wrong.includes(action.teamId)) throw new GameError("That team already answered");

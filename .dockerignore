@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+.pnpm-store
+node_modules
+dist
+data
+fixtures
+coverage
+*.log
+.env
+.env.*
+.DS_Store
+Dockerfile
+.dockerignore

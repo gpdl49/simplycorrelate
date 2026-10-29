@@ -2,17 +2,21 @@
   "name": "simplycorrelate",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
     "dev": "concurrently -k -n server,web \"node --watch --disable-warning=ExperimentalWarning --import tsx src/server/index.ts\" \"vite\"",
-    "build": "vite build && esbuild src/server/index.ts --bundle --platform=node --format=esm --target=node24 --packages=external --outfile=dist/server/index.js",
+    "build": "vite build && pnpm build:server",
+    "build:server": "esbuild src/server/index.ts --bundle --platform=node --format=esm --target=node24 --outfile=dist/server/index.js --external:bufferutil --external:utf-8-validate \"--banner:js=import { createRequire as __createRequire } from 'node:module'; const require = __createRequire(import.meta.url);\"",
     "start": "node --disable-warning=ExperimentalWarning dist/server/index.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

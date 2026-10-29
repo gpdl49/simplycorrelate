@@ -17,6 +17,8 @@ export interface StandardLive {
   revealed: boolean;
   awarded: string[];
   penalised: string[];
+  /** Marks on questions navigated away from, by index, so revisiting restores them. */
+  marks?: Record<number, { awarded: string[]; penalised: string[] }>;
 }
 
 export interface ConnectionLive {

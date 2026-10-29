@@ -9,6 +9,7 @@ import type { Role } from "../shared/view";
 import { api } from "./api";
 import { requireViewer, whoami } from "./auth";
 import { config } from "./config";
+import { db } from "./db";
 import { hub, type ServerMessage } from "./hub";
 import { seedIfEmpty } from "./store";
 
@@ -27,6 +28,7 @@ app.use("*", async (c, next) => {
 app.route("/api", api);
 
 app.use("/media/*", serveStatic({ root: config.dataDir }));
+app.get("/media/*", (c) => c.text("Not found", 404));
 
 app.get(
   "/ws",
@@ -90,7 +92,7 @@ app.get("*", (c) => {
 });
 
 const wss = new WebSocketServer({ noServer: true });
-serve(
+const server = serve(
   { fetch: app.fetch, port: config.port, hostname: config.host, websocket: { server: wss } },
   (info) => {
     console.log(
@@ -98,3 +100,13 @@ serve(
     );
   },
 );
+
+// Docker sends SIGTERM to PID 1; exit promptly (state is already persisted on every action).
+for (const sig of ["SIGTERM", "SIGINT"] as const) {
+  process.on(sig, () => {
+    console.log(`${sig}: shutting down`);
+    server.close();
+    db.close();
+    process.exit(0);
+  });
+}

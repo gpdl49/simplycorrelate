@@ -1,0 +1,746 @@
+{
+  "_comment": "DEMO CONTENT for rehearsal only. Replace with the real quiz before Saturday. Importing this REPLACES all teams, questions and matches.",
+  "version": 1,
+  "teams": [
+    {
+      "id": "t1",
+      "name": "Bit Flippers",
+      "color": "#2977F5"
+    },
+    {
+      "id": "t2",
+      "name": "Null Pointers",
+      "color": "#E8484E"
+    },
+    {
+      "id": "t3",
+      "name": "Stack Smashers",
+      "color": "#1FB58F"
+    },
+    {
+      "id": "t4",
+      "name": "Kernel Panic",
+      "color": "#F5A524"
+    },
+    {
+      "id": "t5",
+      "name": "Syntax Errors",
+      "color": "#9B5DE5"
+    },
+    {
+      "id": "t6",
+      "name": "Cache Hits",
+      "color": "#EC6FB0"
+    }
+  ],
+  "questions": [
+    {
+      "id": "demo-std-1",
+      "label": "DEMO std 1",
+      "type": "standard",
+      "prompt": "What does HTTP stand for?",
+      "answer": "HyperText Transfer Protocol",
+      "points": 1,
+      "penalty": 0
+    },
+    {
+      "id": "demo-std-2",
+      "label": "DEMO std 2",
+      "type": "standard",
+      "prompt": "Which 2023 ISRO mission made India the first country to land near the Moon's south pole?",
+      "answer": "Chandrayaan-3",
+      "points": 1,
+      "penalty": 0
+    },
+    {
+      "id": "demo-std-3",
+      "label": "DEMO std 3",
+      "type": "standard",
+      "prompt": "What is the binary number 1010 in decimal?",
+      "answer": "10",
+      "points": 1,
+      "penalty": 0
+    },
+    {
+      "id": "demo-std-4",
+      "label": "DEMO std 4",
+      "type": "standard",
+      "prompt": "Who invented the World Wide Web in 1989 while working at CERN?",
+      "answer": "Tim Berners-Lee",
+      "points": 1,
+      "penalty": 0
+    },
+    {
+      "id": "demo-std-5",
+      "label": "DEMO std 5",
+      "type": "standard",
+      "prompt": "What does RAM stand for?",
+      "answer": "Random Access Memory",
+      "points": 1,
+      "penalty": 0
+    },
+    {
+      "id": "demo-std-6",
+      "label": "DEMO std 6",
+      "type": "standard",
+      "prompt": "Which programming language did Guido van Rossum create?",
+      "answer": "Python",
+      "points": 1,
+      "penalty": 0
+    },
+    {
+      "id": "demo-std-7",
+      "label": "DEMO std 7",
+      "type": "standard",
+      "prompt": "How many bits are there in one byte?",
+      "answer": "8 (eight)",
+      "points": 2,
+      "penalty": 1
+    },
+    {
+      "id": "demo-std-8",
+      "label": "DEMO std 8",
+      "type": "standard",
+      "prompt": "The payments system launched by NPCI in 2016 that you use when you scan a QR code at a chai stall is called what?",
+      "answer": "UPI (Unified Payments Interface)",
+      "points": 2,
+      "penalty": 1
+    },
+    {
+      "id": "demo-con-1",
+      "label": "DEMO connection 1: First names of computing pioneers",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Radia"
+        },
+        {
+          "text": "Margaret"
+        },
+        {
+          "text": "Grace"
+        },
+        {
+          "text": "Ada"
+        }
+      ],
+      "connection": "First names of computing pioneers",
+      "explanation": "Radia Perlman (spanning tree protocol), Margaret Hamilton (Apollo flight software), Grace Hopper (COBOL, compilers), Ada Lovelace (first published algorithm)."
+    },
+    {
+      "id": "demo-con-2",
+      "label": "DEMO connection 2: Google products that were shut down",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Google Reader"
+        },
+        {
+          "text": "Picasa"
+        },
+        {
+          "text": "Orkut"
+        },
+        {
+          "text": "Google+"
+        }
+      ],
+      "connection": "Google products that were shut down",
+      "explanation": "Reader closed 2013, Picasa 2016, Orkut 2014 (huge in India and Brazil), Google+ 2019."
+    },
+    {
+      "id": "demo-con-3",
+      "label": "DEMO connection 3: Indian supercomputers",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Mihir"
+        },
+        {
+          "text": "Pratyush"
+        },
+        {
+          "text": "AIRAWAT"
+        },
+        {
+          "text": "PARAM"
+        }
+      ],
+      "connection": "Indian supercomputers",
+      "explanation": "Mihir (NCMRWF, Noida), Pratyush (IITM, Pune), AIRAWAT (AI supercomputer at C-DAC), PARAM (C-DAC's series, from PARAM 8000 in 1991)."
+    },
+    {
+      "id": "demo-con-4",
+      "label": "DEMO connection 4: Foods that are also computing terms",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Spam"
+        },
+        {
+          "text": "Java"
+        },
+        {
+          "text": "Chip"
+        },
+        {
+          "text": "Cookie"
+        }
+      ],
+      "connection": "Foods that are also computing terms",
+      "explanation": "Spam (junk email, named after the tinned meat via Monty Python), Java (coffee, and the language), chip (UK for a fry, and a microchip), cookie (browser cookie)."
+    },
+    {
+      "id": "demo-con-5",
+      "label": "DEMO connection 5: Computing words hiding animals",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Emulator"
+        },
+        {
+          "text": "Bitrate"
+        },
+        {
+          "text": "Antivirus"
+        },
+        {
+          "text": "Concatenate"
+        }
+      ],
+      "connection": "Computing words hiding animals",
+      "explanation": "emEMUlator, bitRATe, ANTivirus, conCATenate."
+    },
+    {
+      "id": "demo-con-6",
+      "label": "DEMO connection 6: Keyboard layouts",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Colemak"
+        },
+        {
+          "text": "Dvorak"
+        },
+        {
+          "text": "AZERTY"
+        },
+        {
+          "text": "QWERTY"
+        }
+      ],
+      "connection": "Keyboard layouts",
+      "explanation": "Colemak (2006), Dvorak (1936), AZERTY (French), QWERTY (the standard, from typewriters)."
+    },
+    {
+      "id": "demo-con-7",
+      "label": "DEMO connection 7: People who gave their names to SI units",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Henry"
+        },
+        {
+          "text": "Weber"
+        },
+        {
+          "text": "Siemens"
+        },
+        {
+          "text": "Watt"
+        }
+      ],
+      "connection": "People who gave their names to SI units",
+      "explanation": "Joseph Henry (inductance), Wilhelm Weber (magnetic flux), Werner von Siemens (conductance), James Watt (power)."
+    },
+    {
+      "id": "demo-con-8",
+      "label": "DEMO connection 8: Fruits that are tech brands",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Orange"
+        },
+        {
+          "text": "BlackBerry"
+        },
+        {
+          "text": "Raspberry"
+        },
+        {
+          "text": "Apple"
+        }
+      ],
+      "connection": "Fruits that are tech brands",
+      "explanation": "Orange (telecoms), BlackBerry (phones), Raspberry Pi (single-board computers), Apple."
+    },
+    {
+      "id": "demo-con-9",
+      "label": "DEMO connection 9: Technology named after people",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Bluetooth"
+        },
+        {
+          "text": "Pascal"
+        },
+        {
+          "text": "Linux"
+        },
+        {
+          "text": "Tesla"
+        }
+      ],
+      "connection": "Technology named after people",
+      "explanation": "Bluetooth after the Danish king Harald Bluetooth, Pascal after Blaise Pascal, Linux after Linus Torvalds, Tesla after Nikola Tesla."
+    },
+    {
+      "id": "demo-con-10",
+      "label": "DEMO connection 10: Cricket fielding positions",
+      "type": "connection",
+      "clues": [
+        {
+          "text": "Gully"
+        },
+        {
+          "text": "Silly point"
+        },
+        {
+          "text": "Third man"
+        },
+        {
+          "text": "Slip"
+        }
+      ],
+      "connection": "Cricket fielding positions",
+      "explanation": "All positions on a cricket field. Gully and Slip are behind the batter on the off side."
+    },
+    {
+      "id": "demo-seq-1",
+      "label": "DEMO sequence 1: Units of data, each 1024× the last",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "Kilobyte"
+        },
+        {
+          "text": "Megabyte"
+        },
+        {
+          "text": "Gigabyte"
+        },
+        {
+          "text": "Terabyte"
+        }
+      ],
+      "connection": "Units of data, each 1024× the last",
+      "explanation": "KB, MB, GB, TB (strictly KiB/MiB/GiB/TiB for powers of 1024). Accept 'Terabyte'."
+    },
+    {
+      "id": "demo-seq-2",
+      "label": "DEMO sequence 2: Planets, moving inwards from the Sun",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "Neptune"
+        },
+        {
+          "text": "Uranus"
+        },
+        {
+          "text": "Saturn"
+        },
+        {
+          "text": "Jupiter"
+        }
+      ],
+      "connection": "Planets, moving inwards from the Sun",
+      "explanation": "Neptune, Uranus, Saturn, then Jupiter. Accept 'Jupiter'."
+    },
+    {
+      "id": "demo-seq-3",
+      "label": "DEMO sequence 3: Intel x86 processors in order",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "8086"
+        },
+        {
+          "text": "80286"
+        },
+        {
+          "text": "80386"
+        },
+        {
+          "text": "80486"
+        }
+      ],
+      "connection": "Intel x86 processors in order",
+      "explanation": "The 8086 (1978), 80286, 80386 and 80486 (1989), before Intel switched to the name Pentium. Accept '486'."
+    },
+    {
+      "id": "demo-seq-4",
+      "label": "DEMO sequence 4: Elements by atomic number (1, 2, 3, 4)",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "Hydrogen"
+        },
+        {
+          "text": "Helium"
+        },
+        {
+          "text": "Lithium"
+        },
+        {
+          "text": "Beryllium"
+        }
+      ],
+      "connection": "Elements by atomic number (1, 2, 3, 4)",
+      "explanation": "Atomic numbers 1–4."
+    },
+    {
+      "id": "demo-seq-5",
+      "label": "DEMO sequence 5: Notes of the Indian sargam",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "Sa"
+        },
+        {
+          "text": "Re"
+        },
+        {
+          "text": "Ga"
+        },
+        {
+          "text": "Ma"
+        }
+      ],
+      "connection": "Notes of the Indian sargam",
+      "explanation": "Sa Re Ga Ma Pa Dha Ni."
+    },
+    {
+      "id": "demo-seq-6",
+      "label": "DEMO sequence 6: Counting in binary",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "1"
+        },
+        {
+          "text": "10"
+        },
+        {
+          "text": "11"
+        },
+        {
+          "text": "100"
+        }
+      ],
+      "connection": "Counting in binary",
+      "explanation": "1, 2, 3, 4 in binary. Accept '100' (not 'one hundred')."
+    },
+    {
+      "id": "demo-seq-7",
+      "label": "DEMO sequence 7: NATO phonetic alphabet (H, I, J, K)",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "Hotel"
+        },
+        {
+          "text": "India"
+        },
+        {
+          "text": "Juliett"
+        },
+        {
+          "text": "Kilo"
+        }
+      ],
+      "connection": "NATO phonetic alphabet (H, I, J, K)",
+      "explanation": "H, I, J, then K = Kilo."
+    },
+    {
+      "id": "demo-seq-8",
+      "label": "DEMO sequence 8: Presidents of India, in order",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "Rajendra Prasad"
+        },
+        {
+          "text": "S. Radhakrishnan"
+        },
+        {
+          "text": "Zakir Husain"
+        },
+        {
+          "text": "V. V. Giri"
+        }
+      ],
+      "connection": "Presidents of India, in order",
+      "explanation": "1st to 4th Presidents of India. Accept 'Giri'."
+    },
+    {
+      "id": "demo-seq-9",
+      "label": "DEMO sequence 9: Versions of HTTP",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "HTTP/1.0"
+        },
+        {
+          "text": "HTTP/1.1"
+        },
+        {
+          "text": "HTTP/2"
+        },
+        {
+          "text": "HTTP/3"
+        }
+      ],
+      "connection": "Versions of HTTP",
+      "explanation": "HTTP/1.0 (1996), 1.1 (1997), 2 (2015), 3 (2022, over QUIC)."
+    },
+    {
+      "id": "demo-seq-10",
+      "label": "DEMO sequence 10: Fibonacci numbers",
+      "type": "sequence",
+      "clues": [
+        {
+          "text": "13"
+        },
+        {
+          "text": "21"
+        },
+        {
+          "text": "34"
+        },
+        {
+          "text": "55"
+        }
+      ],
+      "connection": "Fibonacci numbers",
+      "explanation": "Each number is the sum of the previous two: 21 + 34 = 55."
+    },
+    {
+      "id": "demo-wall-1",
+      "label": "DEMO wall 1 (languages hidden among snakes, gems, games)",
+      "type": "wall",
+      "groups": [
+        {
+          "connection": "Programming languages",
+          "clues": ["Python", "Ruby", "Go", "Rust"]
+        },
+        {
+          "connection": "Snakes",
+          "clues": ["Cobra", "Viper", "Mamba", "Krait"]
+        },
+        {
+          "connection": "Gemstones",
+          "clues": ["Emerald", "Opal", "Topaz", "Sapphire"]
+        },
+        {
+          "connection": "Board games",
+          "clues": ["Ludo", "Carrom", "Chess", "Pachisi"]
+        }
+      ]
+    },
+    {
+      "id": "demo-wall-2",
+      "label": "DEMO wall 2 (keys, fielding, ___board, startups)",
+      "type": "wall",
+      "groups": [
+        {
+          "connection": "Keyboard keys",
+          "clues": ["Escape", "Shift", "Tab", "Home"]
+        },
+        {
+          "connection": "Cricket fielding positions",
+          "clues": ["Point", "Cover", "Mid-on", "Fine leg"]
+        },
+        {
+          "connection": "___board",
+          "clues": ["Mother", "Clip", "Dash", "Score"]
+        },
+        {
+          "connection": "Indian tech companies",
+          "clues": ["Zoho", "Zomato", "Paytm", "Swiggy"]
+        }
+      ]
+    },
+    {
+      "id": "demo-vow-1",
+      "label": "DEMO vowels 1",
+      "type": "vowels",
+      "category": "Programming languages",
+      "clues": [
+        {
+          "answer": "JavaScript"
+        },
+        {
+          "answer": "Haskell"
+        },
+        {
+          "answer": "Objective-C"
+        },
+        {
+          "answer": "Assembly language"
+        }
+      ]
+    },
+    {
+      "id": "demo-vow-2",
+      "label": "DEMO vowels 2",
+      "type": "vowels",
+      "category": "Indian cities",
+      "clues": [
+        {
+          "answer": "Thiruvananthapuram"
+        },
+        {
+          "answer": "Bengaluru"
+        },
+        {
+          "answer": "Ahmedabad"
+        },
+        {
+          "answer": "Visakhapatnam"
+        }
+      ]
+    },
+    {
+      "id": "demo-vow-3",
+      "label": "DEMO vowels 3",
+      "type": "vowels",
+      "category": "Parts of a computer",
+      "clues": [
+        {
+          "answer": "Central processing unit"
+        },
+        {
+          "answer": "Hard disk drive"
+        },
+        {
+          "answer": "Motherboard"
+        },
+        {
+          "answer": "Graphics card"
+        }
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "id": "demo-heat-1",
+      "name": "DEMO Heat 1",
+      "teamIds": ["t1", "t2", "t3"],
+      "locked": false,
+      "rounds": [
+        {
+          "id": "h1-std",
+          "type": "standard",
+          "title": "Warm-up",
+          "questionIds": ["demo-std-1", "demo-std-2", "demo-std-3"]
+        },
+        {
+          "id": "h1-con",
+          "type": "connection",
+          "title": "",
+          "questionIds": ["demo-con-1", "demo-con-2", "demo-con-3"]
+        },
+        {
+          "id": "h1-seq",
+          "type": "sequence",
+          "title": "",
+          "questionIds": ["demo-seq-1", "demo-seq-2", "demo-seq-3"]
+        },
+        {
+          "id": "h1-wall",
+          "type": "wall",
+          "title": "",
+          "questionIds": ["demo-wall-1"]
+        },
+        {
+          "id": "h1-vow",
+          "type": "vowels",
+          "title": "",
+          "questionIds": ["demo-vow-1"]
+        }
+      ]
+    },
+    {
+      "id": "demo-heat-2",
+      "name": "DEMO Heat 2",
+      "teamIds": ["t4", "t5", "t6"],
+      "locked": false,
+      "rounds": [
+        {
+          "id": "h2-std",
+          "type": "standard",
+          "title": "Warm-up",
+          "questionIds": ["demo-std-4", "demo-std-5", "demo-std-6"]
+        },
+        {
+          "id": "h2-con",
+          "type": "connection",
+          "title": "",
+          "questionIds": ["demo-con-4", "demo-con-5", "demo-con-6"]
+        },
+        {
+          "id": "h2-seq",
+          "type": "sequence",
+          "title": "",
+          "questionIds": ["demo-seq-4", "demo-seq-5", "demo-seq-6"]
+        },
+        {
+          "id": "h2-wall",
+          "type": "wall",
+          "title": "",
+          "questionIds": ["demo-wall-2"]
+        },
+        {
+          "id": "h2-vow",
+          "type": "vowels",
+          "title": "",
+          "questionIds": ["demo-vow-2"]
+        }
+      ]
+    },
+    {
+      "id": "demo-final",
+      "name": "DEMO Final",
+      "teamIds": ["t1", "t4"],
+      "locked": false,
+      "rounds": [
+        {
+          "id": "fin-std",
+          "type": "standard",
+          "title": "Warm-up",
+          "questionIds": ["demo-std-7", "demo-std-8"]
+        },
+        {
+          "id": "fin-con",
+          "type": "connection",
+          "title": "",
+          "questionIds": ["demo-con-7", "demo-con-8", "demo-con-9", "demo-con-10"]
+        },
+        {
+          "id": "fin-seq",
+          "type": "sequence",
+          "title": "",
+          "questionIds": ["demo-seq-7", "demo-seq-8", "demo-seq-9", "demo-seq-10"]
+        },
+        {
+          "id": "fin-vow",
+          "type": "vowels",
+          "title": "",
+          "questionIds": ["demo-vow-3"]
+        }
+      ]
+    }
+  ]
+}

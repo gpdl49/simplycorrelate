@@ -6,6 +6,9 @@ export type AuthMode = "proxy" | "pin" | "none";
 const authMode = (process.env.AUTH_MODE ?? "none") as AuthMode;
 if (!["proxy", "pin", "none"].includes(authMode)) throw new Error(`Invalid AUTH_MODE ${authMode}`);
 if (authMode === "pin" && !process.env.HOST_PIN) throw new Error("AUTH_MODE=pin requires HOST_PIN");
+if (authMode === "pin" && !process.env.SESSION_SECRET) {
+  console.warn("SESSION_SECRET is not set; host logins will not survive a restart.");
+}
 
 export const config = {
   port: Number(process.env.PORT ?? 8080),

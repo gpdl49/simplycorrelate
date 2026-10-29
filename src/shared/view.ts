@@ -71,6 +71,7 @@ export interface ConnectionView {
 }
 
 export interface TileView {
+  /** Host: the id to send with `tapTile`. Display: an opaque id, stable for the wall (matches `selected`). */
   id: string;
   text: string;
   /** Group index once found or resolved (host: always). */
@@ -276,10 +277,12 @@ function roundView(
           rest.filter((t) => tileGroup(t) === g),
         );
       }
+      // Internal tile ids ("group:clue") encode the grouping, so the display gets opaque ids.
+      const publicId = (id: string) => (host ? id : `t${live.order.indexOf(id)}`);
       const tiles: TileView[] = [...foundTiles, ...rest].map((id) => {
         const found = live.found.includes(tileGroup(id));
         return {
-          id,
+          id: publicId(id),
           text: text(id),
           found,
           group: found || resolved || host ? tileGroup(id) : null,
@@ -291,7 +294,7 @@ function roundView(
         slots: slotsFor(round, state, content, host, "wall"),
         teamId: live.teamId,
         tiles,
-        selected: live.selected,
+        selected: live.selected.map(publicId),
         lives: live.lives,
         foundCount: live.found.length,
         connections: [0, 1, 2, 3].map((g) => {
