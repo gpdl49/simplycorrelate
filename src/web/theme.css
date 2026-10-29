@@ -1,0 +1,64 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/michroma";
+
+/* Exun brand tokens (from exunclan.com). */
+:root {
+  --exun-blue: #2977f5;
+  --exun-blue-600: #1f62d0;
+  --exun-ink: #1b2a33;
+  --exun-ink-900: #111c23;
+  --exun-navy: #194a6d;
+  --exun-slate: #435a7e;
+  --exun-sky: #d0e2ff;
+  --exun-mist: #f4f8ff;
+
+  /* Found-group colours on the connecting wall (by found order). */
+  --wall-1: #2977f5;
+  --wall-2: #13a383;
+  --wall-3: #e09b1a;
+  --wall-4: #8a4fd8;
+
+  --ok: #1fb58f;
+  --bad: #e8484e;
+  --warn: #f5a524;
+
+  --font-body: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Michroma", "Inter Variable", sans-serif;
+  --radius: 10px;
+
+  color-scheme: dark;
+  font-family: var(--font-body);
+  background: var(--exun-ink);
+  color: var(--exun-mist);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+.display-font {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: var(--exun-sky);
+}
