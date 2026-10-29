@@ -27,16 +27,25 @@ const base = {
   label: z.string().default(""),
 };
 
-export const StandardQuestionSchema = z.object({
-  ...base,
-  type: z.literal("standard"),
-  prompt: z.string().min(1),
-  answer: z.string().min(1),
-  media: MediaSchema.optional(),
-  points: z.number().int().default(1),
-  /** Points deducted for a wrong answer; 0 disables negative marking. */
-  penalty: z.number().int().min(0).default(0),
-});
+/** A question needs text, an image, or both. */
+const promptOrMedia = (q: { prompt: string; media?: Media | undefined }) =>
+  q.prompt.trim().length > 0 || !!q.media;
+const promptOrMediaError = { message: "Add question text or an image", path: ["prompt"] };
+
+export const StandardQuestionSchema = z
+  .object({
+    ...base,
+    type: z.literal("standard"),
+    prompt: z.string().default(""),
+    answer: z.string().min(1),
+    media: MediaSchema.optional(),
+    /** Shown alongside the answer once revealed. */
+    answerMedia: MediaSchema.optional(),
+    points: z.number().int().default(1),
+    /** Points deducted for a wrong answer; 0 disables negative marking. */
+    penalty: z.number().int().min(0).default(0),
+  })
+  .refine(promptOrMedia, promptOrMediaError);
 
 /** Connections (4 clues → connection) and Sequences (3 clues → 4th; clue 4 is the answer). */
 export const ConnectionQuestionSchema = z.object({
@@ -72,12 +81,16 @@ export const VowelsQuestionSchema = z.object({
   clues: z.array(VowelsClueSchema).min(1).max(4),
 });
 
-export const BoardClueSchema = z.object({
-  prompt: z.string().min(1),
-  answer: z.string().min(1),
-  media: MediaSchema.optional(),
-  points: z.number().int().positive(),
-});
+export const BoardClueSchema = z
+  .object({
+    prompt: z.string().default(""),
+    answer: z.string().min(1),
+    media: MediaSchema.optional(),
+    /** Shown alongside the answer once revealed. */
+    answerMedia: MediaSchema.optional(),
+    points: z.number().int().positive(),
+  })
+  .refine(promptOrMedia, promptOrMediaError);
 
 /** One column of a Jeopardy-style board: a category with questions of increasing value. */
 export const CategoryQuestionSchema = z.object({
@@ -173,9 +186,11 @@ export type Match = z.infer<typeof MatchSchema>;
 
 export const QuizExportSchema = z.object({
   version: z.literal(1),
-  teams: z.array(TeamSchema),
-  questions: z.array(QuestionSchema),
-  matches: z.array(MatchSchema),
+  teams: z.array(TeamSchema).default([]),
+  questions: z.array(QuestionSchema).default([]),
+  matches: z.array(MatchSchema).default([]),
+  /** Uploaded media bundled into the file: filename under /media/ → base64 contents. */
+  media: z.record(z.string(), z.string()).optional(),
 });
 export type QuizExport = z.infer<typeof QuizExportSchema>;
 

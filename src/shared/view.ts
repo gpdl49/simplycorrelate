@@ -49,6 +49,7 @@ export interface StandardView {
   penalty: number;
   revealed: boolean;
   answer?: string;
+  answerMedia?: Media;
   awarded: string[];
   penalised: string[];
   label?: string;
@@ -141,6 +142,7 @@ export interface BoardView {
     prompt: string;
     media?: Media;
     answer?: string;
+    answerMedia?: Media;
   } | null;
   timer: Timer | null;
 }
@@ -258,7 +260,10 @@ function roundView(
         penalised: live.penalised,
       };
       if (q?.media) v.media = q.media;
-      if (host || live.revealed) v.answer = q?.answer ?? "";
+      if (host || live.revealed) {
+        v.answer = q?.answer ?? "";
+        if (q?.answerMedia) v.answerMedia = q.answerMedia;
+      }
       if (host && q) v.label = q.label;
       return v;
     }
@@ -373,7 +378,10 @@ function roundView(
       if (cat && clue) {
         current = { category: cat.category, points: clue.points, prompt: clue.prompt };
         if (clue.media) current.media = clue.media;
-        if (host || live.phase === "done") current.answer = clue.answer;
+        if (host || live.phase === "done") {
+          current.answer = clue.answer;
+          if (clue.answerMedia) current.answerMedia = clue.answerMedia;
+        }
       }
       return {
         type: "board",

@@ -92,7 +92,10 @@ api.get("/admin/export", (c) => {
   );
   return c.json(store.exportQuiz());
 });
-api.post("/admin/import", async (c) => c.json(store.importQuiz(await c.req.json())));
+/** `?mode=merge` adds/updates by id; the default replaces all content. */
+api.post("/admin/import", async (c) =>
+  c.json(store.importQuiz(await c.req.json(), c.req.query("mode") === "merge" ? "merge" : "replace")),
+);
 
 /** Multipart upload with a single `file` field; returns a Media object. */
 api.post("/admin/media", async (c) => {

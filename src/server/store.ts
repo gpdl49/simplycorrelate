@@ -1,3 +1,5 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { nanoid } from "nanoid";
 import {
   type Match,
@@ -10,6 +12,7 @@ import {
   TeamSchema,
 } from "../shared/content";
 import type { Content } from "../shared/game";
+import { config } from "./config";
 import { db, tx } from "./db";
 
 /** Quiz content persisted in SQLite. Every write calls `onChange` so live clients refresh. */
@@ -160,28 +163,86 @@ export function deleteMatch(id: string): void {
   changed();
 }
 
-export function exportQuiz(): QuizExport {
-  return { version: 1, teams: listTeams(), questions: listQuestions(), matches: listMatches() };
+const MEDIA_FILE = /^[A-Za-z0-9_-]+\.(png|jpe?g|webp|gif|svg|mp3|m4a|aac|ogg|wav)$/;
+
+/** Filenames of uploaded media referenced anywhere in the content. */
+function referencedMedia(data: unknown): string[] {
+  const names = new Set<string>();
+  for (const m of JSON.stringify(data).matchAll(/"\/media\/([^"/]+)"/g)) {
+    if (MEDIA_FILE.test(m[1]!)) names.add(m[1]!);
+  }
+  return [...names];
 }
 
-/** Replaces all content with the export. */
-export function importQuiz(input: unknown): QuizExport {
+/** Everything, with referenced media bundled in so the file restores on another server. */
+export function exportQuiz(): QuizExport {
+  const data: QuizExport = {
+    version: 1,
+    teams: listTeams(),
+    questions: listQuestions(),
+    matches: listMatches(),
+  };
+  const media: Record<string, string> = {};
+  for (const name of referencedMedia(data)) {
+    const file = path.join(config.dataDir, "media", name);
+    if (existsSync(file)) media[name] = readFileSync(file).toString("base64");
+  }
+  if (Object.keys(media).length) data.media = media;
+  return data;
+}
+
+export interface ImportResult {
+  mode: "replace" | "merge";
+  teams: number;
+  questions: number;
+  matches: number;
+  media: number;
+}
+
+/**
+ * replace: wipe all content first (restoring a backup).
+ * merge:   add or update by id, keeping everything else (adding a batch of questions).
+ */
+export function importQuiz(input: unknown, mode: "replace" | "merge" = "replace"): ImportResult {
   const data = QuizExportSchema.parse(input);
+  const media = Object.entries(data.media ?? {});
+  for (const [name] of media) {
+    if (!MEDIA_FILE.test(name)) throw new StoreError(`Bad media filename ${name}`);
+  }
+  for (const [name, b64] of media) {
+    writeFileSync(path.join(config.dataDir, "media", name), Buffer.from(b64, "base64"));
+  }
   tx(() => {
-    db.exec("DELETE FROM teams; DELETE FROM questions; DELETE FROM matches;");
-    for (const [i, t] of data.teams.entries()) saveTeamRow(t, i);
+    if (mode === "replace") {
+      db.exec("DELETE FROM teams; DELETE FROM questions; DELETE FROM matches;");
+    }
+    const teamBase = mode === "replace" ? 0 : nextSort("teams");
+    for (const [i, t] of data.teams.entries()) {
+      saveTeamRow(t, existingSort("teams", t.id) ?? teamBase + i);
+    }
     const now = Date.now();
-    const insertQ = db.prepare(
-      "INSERT INTO questions (id, type, data, updated_at) VALUES (?, ?, ?, ?)",
+    const upsertQ = db.prepare(
+      "INSERT INTO questions (id, type, data, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET type = excluded.type, data = excluded.data, updated_at = excluded.updated_at",
     );
     for (const [i, q] of data.questions.entries()) {
-      insertQ.run(q.id, q.type, JSON.stringify(q), now - i);
+      upsertQ.run(q.id, q.type, JSON.stringify(q), now - i);
     }
-    const insertM = db.prepare("INSERT INTO matches (id, sort, data) VALUES (?, ?, ?)");
-    for (const [i, m] of data.matches.entries()) insertM.run(m.id, i, JSON.stringify(m));
+    const matchBase = mode === "replace" ? 0 : nextSort("matches");
+    const upsertM = db.prepare(
+      "INSERT INTO matches (id, sort, data) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data",
+    );
+    for (const [i, m] of data.matches.entries()) {
+      upsertM.run(m.id, existingSort("matches", m.id) ?? matchBase + i, JSON.stringify(m));
+    }
   });
   changed();
-  return data;
+  return {
+    mode,
+    teams: data.teams.length,
+    questions: data.questions.length,
+    matches: data.matches.length,
+    media: media.length,
+  };
 }
 
 export class StoreError extends Error {}

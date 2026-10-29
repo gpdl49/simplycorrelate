@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Imports fixtures/demo-quiz.json (DEMO content) into a running server, REPLACING all content.
+// Imports fixtures/demo-quiz.json (DEMO content) into a running server, REPLACING all content
+// unless MODE=merge (add/update by id, keep everything else).
 // Usage: pnpm seed:demo   Env: URL (default http://localhost:8080), FILE (default the demo fixture),
 //   HOST_PIN (AUTH_MODE=pin: logs in first), COOKIE (sent as-is, e.g. an oauth2-proxy session).
 import { readFileSync } from "node:fs";
@@ -23,12 +24,13 @@ if (process.env.HOST_PIN) {
   headers.cookie = r.headers.get("set-cookie")?.split(";")[0] ?? "";
 }
 
-const r = await fetch(`${url}/api/admin/import`, { method: "POST", headers, body });
+const mode = process.env.MODE === "merge" ? "?mode=merge" : "";
+const r = await fetch(`${url}/api/admin/import${mode}`, { method: "POST", headers, body });
 if (!r.ok) {
   console.error(`Import failed: ${r.status} ${await r.text()}`);
   process.exit(1);
 }
 const q = await r.json();
 console.log(
-  `Imported into ${url}: ${q.teams.length} teams, ${q.questions.length} questions, ${q.matches.length} matches.`,
+  `Imported into ${url}: ${q.teams} teams, ${q.questions} questions, ${q.matches} matches, ${q.media} media files.`,
 );
