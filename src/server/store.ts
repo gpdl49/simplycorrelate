@@ -36,7 +36,9 @@ const DEFAULT_TEAMS: Omit<Team, "id">[] = [
 export function seedIfEmpty(): void {
   const { n } = db.prepare("SELECT COUNT(*) AS n FROM teams").get() as { n: number };
   if (n === 0) {
-    tx(() => DEFAULT_TEAMS.forEach((t, i) => saveTeamRow({ id: `team${i + 1}`, ...t }, i)));
+    tx(() => {
+      for (const [i, t] of DEFAULT_TEAMS.entries()) saveTeamRow({ id: `team${i + 1}`, ...t }, i);
+    });
   }
 }
 
@@ -100,7 +102,10 @@ export function deleteTeam(id: string): void {
 }
 
 export function reorderTeams(ids: string[]): void {
-  tx(() => ids.forEach((id, i) => db.prepare("UPDATE teams SET sort = ? WHERE id = ?").run(i, id)));
+  tx(() => {
+    for (const [i, id] of ids.entries())
+      db.prepare("UPDATE teams SET sort = ? WHERE id = ?").run(i, id);
+  });
   changed();
 }
 
@@ -160,18 +165,16 @@ export function importQuiz(input: unknown): QuizExport {
   const data = QuizExportSchema.parse(input);
   tx(() => {
     db.exec("DELETE FROM teams; DELETE FROM questions; DELETE FROM matches;");
-    data.teams.forEach((t, i) => saveTeamRow(t, i));
+    for (const [i, t] of data.teams.entries()) saveTeamRow(t, i);
     const now = Date.now();
-    data.questions.forEach((q, i) =>
-      db
-        .prepare("INSERT INTO questions (id, type, data, updated_at) VALUES (?, ?, ?, ?)")
-        .run(q.id, q.type, JSON.stringify(q), now - i),
+    const insertQ = db.prepare(
+      "INSERT INTO questions (id, type, data, updated_at) VALUES (?, ?, ?, ?)",
     );
-    data.matches.forEach((m, i) =>
-      db
-        .prepare("INSERT INTO matches (id, sort, data) VALUES (?, ?, ?)")
-        .run(m.id, i, JSON.stringify(m)),
-    );
+    for (const [i, q] of data.questions.entries()) {
+      insertQ.run(q.id, q.type, JSON.stringify(q), now - i);
+    }
+    const insertM = db.prepare("INSERT INTO matches (id, sort, data) VALUES (?, ?, ?)");
+    for (const [i, m] of data.matches.entries()) insertM.run(m.id, i, JSON.stringify(m));
   });
   changed();
   return data;
