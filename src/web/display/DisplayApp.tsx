@@ -1,6 +1,7 @@
 import { type MouseEvent, useEffect, useRef, useState } from "react";
 import type { GameView } from "../../shared/view";
 import { useGame } from "../lib/useGame";
+import { BoardRound } from "./BoardRound";
 import { ConnectionRound } from "./ConnectionRound";
 import { RoundFrame } from "./chrome";
 import { StandardRound } from "./StandardRound";
@@ -99,6 +100,8 @@ function Screen({
           return <WallRound {...props} round={round} />;
         case "vowels":
           return <VowelsRound {...props} round={round} />;
+        case "board":
+          return <BoardRound {...props} round={round} />;
         default:
           return (
             <RoundFrame view={view} title={title} clockOffset={clockOffset} active={null}>
