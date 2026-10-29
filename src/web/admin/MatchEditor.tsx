@@ -4,6 +4,8 @@ import {
   DEFAULT_TIMER_SEC,
   GLYPHS,
   type Match,
+  NEGATIVE_MARKING,
+  type NegativeMarking,
   QUESTION_TYPE_FOR_ROUND,
   type Question,
   ROUND_TYPE_LABELS,
@@ -30,7 +32,19 @@ const ROUND_MAX: Record<RoundType, number | null> = {
   sequence: GLYPHS.length,
   wall: 6,
   vowels: null,
+  board: 6,
 };
+
+const NEGATIVE_LABELS: Record<NegativeMarking, string> = {
+  none: "None",
+  steals: "Steals only",
+  all: "All wrong answers",
+};
+
+/** The question type a round slot shows without a type badge. */
+function exactType(round: RoundType): Question["type"] {
+  return round === "board" ? "category" : round;
+}
 
 function move<T>(arr: T[], i: number, d: number): T[] {
   const j = i + d;
@@ -299,6 +313,7 @@ function slotLabel(type: RoundType, i: number, teamCount: number): string {
     return g ? `${g.symbol} ${g.name}` : `#${i + 1}`;
   }
   if (type === "wall") return `Wall ${i + 1}${i < teamCount ? "" : " (spare)"}`;
+  if (type === "board") return `Column ${i + 1}`;
   return `${i + 1}.`;
 }
 
@@ -395,6 +410,29 @@ function RoundCard({
           </button>
         </div>
       </div>
+      {round.type === "board" && (
+        <div className="adm-row">
+          <label className="adm-label" htmlFor={`neg-${round.id || index}`}>
+            Negative marking
+          </label>
+          <select
+            id={`neg-${round.id || index}`}
+            className="adm-input"
+            value={round.negative ?? "steals"}
+            disabled={disabled}
+            onChange={(e) => onChange({ ...round, negative: e.target.value as NegativeMarking })}
+          >
+            {NEGATIVE_MARKING.map((n) => (
+              <option key={n} value={n}>
+                {NEGATIVE_LABELS[n]}
+              </option>
+            ))}
+          </select>
+          <span className="adm-hint">
+            Each column is one board category. Usually 4 columns, up to 6.
+          </span>
+        </div>
+      )}
       {round.type === "wall" && (
         <div className="adm-hint">
           Usually one wall per team ({teamCount} team{teamCount === 1 ? "" : "s"}), up to 6.
@@ -409,7 +447,7 @@ function RoundCard({
               <span className="adm-slot-label">{slotLabel(round.type, i, teamCount)}</span>
               {q ? (
                 <>
-                  {glyphs && q.type !== round.type && <TypeBadge type={q.type} />}
+                  {glyphs && q.type !== exactType(round.type) && <TypeBadge type={q.type} />}
                   <Link className="adm-grow adm-qlink" to={`/admin/questions/${q.id}`}>
                     {questionSummary(q)}
                   </Link>
@@ -461,7 +499,11 @@ function RoundCard({
       </ol>
       {!full && !match.locked && (
         <QuestionPicker
-          label={glyphs ? `Add to ${slotLabel(round.type, ids.length, teamCount)}` : "Add question"}
+          label={
+            glyphs || round.type === "board"
+              ? `Add to ${slotLabel(round.type, ids.length, teamCount)}`
+              : "Add question"
+          }
           round={round}
           questions={questions}
           disabled={disabled}
@@ -492,6 +534,7 @@ function QuestionPicker({
   const [filter, setFilter] = useState("");
   const [choice, setChoice] = useState("");
   const needle = filter.trim().toLowerCase();
+  const exact = exactType(round.type);
   const options = questions
     .filter((q) => eligible(round.type, q) && !round.questionIds.includes(q.id))
     .filter((q) => !needle || questionSummary(q).toLowerCase().includes(needle))
@@ -499,7 +542,7 @@ function QuestionPicker({
     .map((q) => ({ q, note: usageNote(q.id) }))
     .sort(
       (a, b) =>
-        Number(b.q.type === round.type) - Number(a.q.type === round.type) ||
+        Number(b.q.type === exact) - Number(a.q.type === exact) ||
         Number(!!a.note) - Number(!!b.note),
     );
   const wanted = QUESTION_TYPE_FOR_ROUND[round.type];
@@ -527,7 +570,7 @@ function QuestionPicker({
         </option>
         {options.map(({ q, note }) => (
           <option key={q.id} value={q.id}>
-            {q.type !== round.type ? `[${q.type}] ` : ""}
+            {q.type !== exact ? `[${q.type}] ` : ""}
             {questionSummary(q).slice(0, 120)}
             {note ? ` — ${note}` : ""}
           </option>

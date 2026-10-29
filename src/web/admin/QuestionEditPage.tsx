@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { type Question, QuestionSchema } from "../../shared/content";
 import {
   blankQuestion,
+  CategoryForm,
   ConnectionForm,
   extraIssues,
   StandardForm,
@@ -98,6 +99,8 @@ function QuestionEditor({ initial }: { initial: Question }) {
         return <WallForm {...p} q={draft} set={set} />;
       case "vowels":
         return <VowelsForm {...p} q={draft} set={set} />;
+      case "category":
+        return <CategoryForm {...p} q={draft} set={set} />;
     }
   })();
 
@@ -106,7 +109,7 @@ function QuestionEditor({ initial }: { initial: Question }) {
       <div className="adm-pagehead">
         <h2>
           {isNew ? "New" : "Edit"} {TYPE_LABELS[draft.type].toLowerCase()}
-          {draft.type === "vowels" ? " category" : " question"}
+          {draft.type === "vowels" ? " category" : draft.type === "category" ? "" : " question"}
         </h2>
         <Link to="/admin/questions">← Back to the bank</Link>
       </div>

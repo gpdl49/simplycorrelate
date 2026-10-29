@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
-import type {
-  ConnectionQuestion,
-  Question,
-  StandardQuestion,
-  VowelsQuestion,
-  WallQuestion,
+import {
+  type CategoryQuestion,
+  type ConnectionQuestion,
+  defaultBoardPoints,
+  type Question,
+  type StandardQuestion,
+  type VowelsQuestion,
+  type WallQuestion,
 } from "../../shared/content";
 import { disguise, normaliseAnswer, puzzleFor } from "../../shared/vowels";
 import { ErrorText, Field, type Issues, MediaField } from "./ui";
@@ -32,7 +34,18 @@ export function blankQuestion(type: Question["type"]): Question {
       };
     case "vowels":
       return { ...base, type, category: "", clues: [{ answer: "" }] };
+    case "category":
+      return {
+        ...base,
+        type,
+        category: "",
+        clues: Array.from({ length: 5 }, (_, i) => blankBoardClue(i)),
+      };
   }
+}
+
+function blankBoardClue(i: number): CategoryQuestion["clues"][number] {
+  return { prompt: "", answer: "", points: defaultBoardPoints(i) };
 }
 
 /** Extra checks the zod schema can't express. Returns issues keyed like zod paths. */
@@ -458,6 +471,129 @@ export function VowelsForm({ q, set, issues }: FormProps<VowelsQuestion>) {
         onClick={() => set({ ...q, clues: [...q.clues, { answer: "" }] })}
       >
         + Add answer ({q.clues.length}/4)
+      </button>
+    </>
+  );
+}
+
+const MAX_BOARD_CLUES = 6;
+
+export function CategoryForm({ q, set, issues }: FormProps<CategoryQuestion>) {
+  type BoardClue = CategoryQuestion["clues"][number];
+  function setClue(i: number, next: BoardClue) {
+    set({ ...q, clues: q.clues.map((c, j) => (j === i ? next : c)) });
+  }
+  function moveClue(i: number, d: -1 | 1) {
+    const j = i + d;
+    if (j < 0 || j >= q.clues.length) return;
+    const clues = q.clues.slice();
+    [clues[i], clues[j]] = [clues[j]!, clues[i]!];
+    set({ ...q, clues });
+  }
+  return (
+    <>
+      <Field
+        label="Category"
+        error={issues.get("category")}
+        hint="Column heading on the board. Clues usually rise in value from top to bottom."
+      >
+        {(id) => (
+          <input
+            id={id}
+            className="adm-input"
+            value={q.category}
+            onChange={(e) => set({ ...q, category: e.target.value })}
+          />
+        )}
+      </Field>
+      <div className="adm-vowels">
+        {q.clues.map((c, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: clues have no ids
+          <div key={i} className="adm-vowel">
+            <Field label={`Clue ${i + 1}`} error={issues.get(`clues.${i}.prompt`)}>
+              {(id) => (
+                <textarea
+                  id={id}
+                  className="adm-input"
+                  rows={2}
+                  value={c.prompt}
+                  onChange={(e) => setClue(i, { ...c, prompt: e.target.value })}
+                />
+              )}
+            </Field>
+            <div className="adm-board-clue-row">
+              <Field label="Answer" error={issues.get(`clues.${i}.answer`)}>
+                {(id) => (
+                  <input
+                    id={id}
+                    className="adm-input"
+                    value={c.answer}
+                    onChange={(e) => setClue(i, { ...c, answer: e.target.value })}
+                  />
+                )}
+              </Field>
+              <Field label="Points" error={issues.get(`clues.${i}.points`)}>
+                {(id) => (
+                  <input
+                    id={id}
+                    className="adm-input"
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={Number.isNaN(c.points) ? "" : c.points}
+                    onChange={(e) => setClue(i, { ...c, points: intOr(e.target.value) })}
+                  />
+                )}
+              </Field>
+            </div>
+            <MediaField
+              value={c.media}
+              onChange={(media) => {
+                const { media: _old, ...rest } = c;
+                setClue(i, media ? { ...rest, media } : rest);
+              }}
+            />
+            <ErrorText>{issues.get(`clues.${i}.media.url`)}</ErrorText>
+            <div className="adm-row">
+              <button
+                type="button"
+                className="adm-btn adm-btn-small"
+                aria-label={`Move clue ${i + 1} up`}
+                disabled={i === 0}
+                onClick={() => moveClue(i, -1)}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className="adm-btn adm-btn-small"
+                aria-label={`Move clue ${i + 1} down`}
+                disabled={i === q.clues.length - 1}
+                onClick={() => moveClue(i, 1)}
+              >
+                ↓
+              </button>
+              <span className="adm-grow" />
+              <button
+                type="button"
+                className="adm-btn adm-btn-small adm-btn-danger"
+                disabled={q.clues.length <= 1}
+                onClick={() => set({ ...q, clues: q.clues.filter((_, j) => j !== i) })}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <ErrorText>{issues.get("clues")}</ErrorText>
+      <button
+        type="button"
+        className="adm-btn"
+        disabled={q.clues.length >= MAX_BOARD_CLUES}
+        onClick={() => set({ ...q, clues: [...q.clues, blankBoardClue(q.clues.length)] })}
+      >
+        + Add clue ({q.clues.length}/{MAX_BOARD_CLUES})
       </button>
     </>
   );

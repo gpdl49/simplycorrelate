@@ -631,6 +631,270 @@
           "answer": "Graphics card"
         }
       ]
+    },
+    {
+      "id": "demo-cat-1",
+      "label": "DEMO board 1",
+      "type": "category",
+      "category": "Programming Languages",
+      "clues": [
+        {
+          "prompt": "Named after a British comedy group, not a snake",
+          "answer": "Python",
+          "points": 10
+        },
+        {
+          "prompt": "Created by Brendan Eich in about ten days in 1995",
+          "answer": "JavaScript",
+          "points": 20
+        },
+        {
+          "prompt": "Written by Dennis Ritchie at Bell Labs and used to rewrite Unix",
+          "answer": "C",
+          "points": 30
+        },
+        {
+          "prompt": "Apple's language, introduced in 2014 as a successor to Objective-C",
+          "answer": "Swift",
+          "points": 40
+        },
+        {
+          "prompt": "Named after the woman often called the first computer programmer",
+          "answer": "Ada",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-2",
+      "label": "DEMO board 2",
+      "type": "category",
+      "category": "Space",
+      "clues": [
+        {
+          "prompt": "The largest planet in the Solar System",
+          "answer": "Jupiter",
+          "points": 10
+        },
+        {
+          "prompt": "India's mission that landed near the Moon's south pole in August 2023",
+          "answer": "Chandrayaan-3",
+          "points": 20
+        },
+        {
+          "prompt": "The first human to travel into space, in 1961",
+          "answer": "Yuri Gagarin",
+          "points": 30
+        },
+        {
+          "prompt": "The planet whose day is longer than its year",
+          "answer": "Venus",
+          "points": 40
+        },
+        {
+          "prompt": "Infrared space telescope launched on Christmas Day 2021",
+          "answer": "James Webb Space Telescope",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-3",
+      "label": "DEMO board 3",
+      "type": "category",
+      "category": "Tech Pioneers",
+      "clues": [
+        {
+          "prompt": "Co-founded Microsoft with Paul Allen in 1975",
+          "answer": "Bill Gates",
+          "points": 10
+        },
+        {
+          "prompt": "Invented the World Wide Web while working at CERN",
+          "answer": "Tim Berners-Lee",
+          "points": 20
+        },
+        {
+          "prompt": "CEO of Google and Alphabet, born in Madurai",
+          "answer": "Sundar Pichai",
+          "points": 30
+        },
+        {
+          "prompt": "Released the first Linux kernel in 1991 as a student in Helsinki",
+          "answer": "Linus Torvalds",
+          "points": 40
+        },
+        {
+          "prompt": "US Navy rear admiral who built one of the first compilers and helped create COBOL",
+          "answer": "Grace Hopper",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-4",
+      "label": "DEMO board 4",
+      "type": "category",
+      "category": "Element Symbols",
+      "clues": [
+        {
+          "prompt": "O",
+          "answer": "Oxygen",
+          "points": 10
+        },
+        {
+          "prompt": "Fe",
+          "answer": "Iron",
+          "points": 20
+        },
+        {
+          "prompt": "Na",
+          "answer": "Sodium",
+          "points": 30
+        },
+        {
+          "prompt": "W",
+          "answer": "Tungsten",
+          "points": 40
+        },
+        {
+          "prompt": "Sb",
+          "answer": "Antimony",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-5",
+      "label": "DEMO board 5",
+      "type": "category",
+      "category": "Internet Acronyms",
+      "clues": [
+        {
+          "prompt": "WWW",
+          "answer": "World Wide Web",
+          "points": 10
+        },
+        {
+          "prompt": "The P in HTTP",
+          "answer": "Protocol",
+          "points": 20
+        },
+        {
+          "prompt": "URL",
+          "answer": "Uniform Resource Locator",
+          "points": 30
+        },
+        {
+          "prompt": "DNS",
+          "answer": "Domain Name System",
+          "points": 40
+        },
+        {
+          "prompt": "CAPTCHA",
+          "answer": "Completely Automated Public Turing test to tell Computers and Humans Apart",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-6",
+      "label": "DEMO board 6",
+      "type": "category",
+      "category": "Made in India",
+      "clues": [
+        {
+          "prompt": "City nicknamed the Silicon Valley of India",
+          "answer": "Bengaluru",
+          "points": 10
+        },
+        {
+          "prompt": "India's national aquatic animal",
+          "answer": "Ganges river dolphin",
+          "points": 20
+        },
+        {
+          "prompt": "India's first satellite, launched in 1975",
+          "answer": "Aryabhata",
+          "points": 30
+        },
+        {
+          "prompt": "Mathematician portrayed in the film The Man Who Knew Infinity",
+          "answer": "Srinivasa Ramanujan",
+          "points": 40
+        },
+        {
+          "prompt": "Physicist after whom the boson is named",
+          "answer": "Satyendra Nath Bose",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-7",
+      "label": "DEMO board 7",
+      "type": "category",
+      "category": "Hardware",
+      "clues": [
+        {
+          "prompt": "The number of bits in a byte",
+          "answer": "8",
+          "points": 10
+        },
+        {
+          "prompt": "The chip often called the brain of the computer",
+          "answer": "CPU",
+          "points": 20
+        },
+        {
+          "prompt": "What RAM stands for",
+          "answer": "Random Access Memory",
+          "points": 30
+        },
+        {
+          "prompt": "Company that makes Ryzen processors",
+          "answer": "AMD",
+          "points": 40
+        },
+        {
+          "prompt": "Observation that transistor counts double roughly every two years",
+          "answer": "Moore's law",
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "demo-cat-8",
+      "label": "DEMO board 8",
+      "type": "category",
+      "category": "Codes and Ciphers",
+      "clues": [
+        {
+          "prompt": "Code made of dots and dashes",
+          "answer": "Morse code",
+          "points": 10
+        },
+        {
+          "prompt": "Cipher that shifts every letter by a fixed amount, named after a Roman general",
+          "answer": "Caesar cipher",
+          "points": 20
+        },
+        {
+          "prompt": "German cipher machine broken at Bletchley Park in World War II",
+          "answer": "Enigma",
+          "points": 30
+        },
+        {
+          "prompt": "Mathematician who designed the Bombe to break Enigma messages",
+          "answer": "Alan Turing",
+          "points": 40
+        },
+        {
+          "prompt": "The number of bits used by standard ASCII",
+          "answer": "7",
+          "points": 50
+        }
+      ]
     }
   ],
   "matches": [
@@ -663,6 +927,13 @@
           "type": "wall",
           "title": "",
           "questionIds": ["demo-wall-1"]
+        },
+        {
+          "id": "h1-board",
+          "type": "board",
+          "title": "",
+          "questionIds": ["demo-cat-1", "demo-cat-2", "demo-cat-3", "demo-cat-4"],
+          "negative": "steals"
         },
         {
           "id": "h1-vow",
@@ -701,6 +972,13 @@
           "type": "wall",
           "title": "",
           "questionIds": ["demo-wall-2"]
+        },
+        {
+          "id": "h2-board",
+          "type": "board",
+          "title": "",
+          "questionIds": ["demo-cat-5", "demo-cat-6", "demo-cat-7", "demo-cat-8"],
+          "negative": "steals"
         },
         {
           "id": "h2-vow",

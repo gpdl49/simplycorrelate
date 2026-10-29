@@ -136,6 +136,7 @@ export const TYPE_LABELS: Record<Question["type"], string> = {
   sequence: "Sequence",
   wall: "Wall",
   vowels: "Missing Vowels",
+  category: "Board category",
 };
 
 /** One-line description of a question for lists and pickers. */
@@ -151,6 +152,8 @@ export function questionSummary(q: Question): string {
         return q.groups.map((g) => g.connection).join(" · ");
       case "vowels":
         return `${q.category} (${q.clues.length})`;
+      case "category":
+        return `${q.category} (${q.clues.map((c) => c.points).join("/")})`;
     }
   })();
   return q.label ? `${q.label} — ${body}` : body;

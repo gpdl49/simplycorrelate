@@ -22,6 +22,9 @@ function haystack(q: Question): string {
     case "vowels":
       parts.push(q.category, ...q.clues.map((c) => c.answer));
       break;
+    case "category":
+      parts.push(q.category, ...q.clues.flatMap((c) => [c.prompt, c.answer]));
+      break;
   }
   return parts.join(" ").toLowerCase();
 }
