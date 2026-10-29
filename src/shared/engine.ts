@@ -1,4 +1,5 @@
 import {
+  type CategoryQuestion,
   type ConnectionQuestion,
   type Match,
   type Question,
@@ -10,6 +11,7 @@ import {
 } from "./content";
 import {
   type Action,
+  type BoardLive,
   CONNECTION_POINTS,
   type ConnectionLive,
   type Content,
@@ -153,7 +155,22 @@ function initLive(round: Round): Live {
         started: false,
         ended: false,
       };
+    case "board":
+      return {
+        type: "board",
+        phase: "pick",
+        cell: null,
+        teamId: null,
+        wrong: [],
+        answeredBy: null,
+        timer: null,
+      };
   }
+}
+
+/** Key recorded in `state.played` for a used board cell. */
+export function boardCellKey(questionId: string, clue: number): string {
+  return `${questionId}#${clue}`;
 }
 
 // ---------- reducer ----------
@@ -269,13 +286,17 @@ export function reduce(state: GameState, action: Action, ctx: Ctx): GameState {
         ? pickWall(state, live, action.slot, ctx)
         : pickConnection(state, live, action.slot, ctx);
     }
-    case "nextClue":
+    case "pickCell":
+      return reduceBoard(state, action, ctx);
     case "answerCorrect":
     case "answerWrong":
     case "steal":
+      if (state.live?.type === "board") return reduceBoard(state, action, ctx);
+      return reduceConnection(state, action, ctx);
+    case "nextClue":
       return reduceConnection(state, action, ctx);
     case "backToPick": {
-      const live = requireLive(state, ["connection", "sequence", "wall"]);
+      const live = requireLive(state, ["connection", "sequence", "wall", "board"]);
       if (live.phase !== "done") throw new GameError("Finish the current question first");
       const m = requireMatch(state, content);
       const next = { ...state, turn: (state.turn + 1) % m.teamIds.length };
@@ -309,6 +330,8 @@ function timerActive(live: Live): boolean {
       return live.phase === "play";
     case "vowels":
       return live.started && !live.ended;
+    case "board":
+      return live.phase === "play";
   }
 }
 
@@ -328,6 +351,9 @@ function onTimerExpired(state: GameState, ctx: Ctx): GameState {
       return withLive(state, { ...live, timer, phase: "connections", selected: [] });
     case "vowels":
       return withLive(state, { ...live, timer, ended: true });
+    case "board":
+      if (live.phase !== "play") return state;
+      return boardWrong(state, { ...live, timer }, ctx, false);
   }
 }
 
@@ -635,5 +661,103 @@ function reduceVowels(
     case "vowelsReveal":
       if (live.clueIndex < 0) throw new GameError("No clue showing");
       return withLive(state, { ...live, revealed: true, buzzed: null });
+  }
+}
+
+// ---------- category board ----------
+
+export function boardCategories(round: Round, content: Content): (CategoryQuestion | null)[] {
+  return round.questionIds.map((id) => {
+    const q = content.questions.get(id);
+    return q?.type === "category" ? q : null;
+  });
+}
+
+function boardCell(state: GameState, live: BoardLive, ctx: Ctx) {
+  const round = currentRound(state, ctx.content)!;
+  if (!live.cell) throw new GameError("No question selected");
+  const cat = boardCategories(round, ctx.content)[live.cell.category];
+  const clue = cat?.clues[live.cell.clue];
+  if (!cat || !clue) throw new GameError("Question missing");
+  return { round, cat, clue };
+}
+
+/** A wrong answer (or timeout when `penalise` is false) by the picking team opens the steal. */
+function boardWrong(state: GameState, live: BoardLive, ctx: Ctx, penalise: boolean): GameState {
+  const { round, clue } = boardCell(state, live, ctx);
+  const deduct = penalise && (round.negative ?? "steals") === "all" && live.teamId;
+  const next = deduct ? addScore(state, live.teamId!, -clue.points) : state;
+  return withLive(next, {
+    ...live,
+    phase: "steal",
+    wrong: live.teamId ? [live.teamId] : [],
+    timer: stopT(live.timer, ctx.now),
+  });
+}
+
+function reduceBoard(
+  state: GameState,
+  action: Extract<Action, { type: "pickCell" | "answerCorrect" | "answerWrong" | "steal" }>,
+  ctx: Ctx,
+): GameState {
+  const live = requireLive(state, ["board"]);
+  const m = requireMatch(state, ctx.content);
+  switch (action.type) {
+    case "pickCell": {
+      if (live.phase !== "pick") throw new GameError("A question is already in play");
+      const round = currentRound(state, ctx.content)!;
+      const cat = boardCategories(round, ctx.content)[action.category];
+      if (!cat?.clues[action.clue]) throw new GameError("No question in that cell");
+      const key = boardCellKey(cat.id, action.clue);
+      if (state.played.includes(key)) throw new GameError("Already played");
+      const secs = roundTimerSec(round);
+      let next = markPlayed(state, key);
+      // The category counts as played once every cell in it is used.
+      if (cat.clues.every((_, i) => next.played.includes(boardCellKey(cat.id, i)))) {
+        next = markPlayed(next, cat.id);
+      }
+      return withLive(next, {
+        ...live,
+        phase: "play",
+        cell: { category: action.category, clue: action.clue },
+        teamId: turnTeamId(state, m),
+        wrong: [],
+        answeredBy: null,
+        timer: secs ? startTimer(secs * 1000, ctx.now) : null,
+      });
+    }
+    case "answerCorrect": {
+      if (live.phase !== "play" || !live.teamId) throw new GameError("Not in play");
+      const { clue } = boardCell(state, live, ctx);
+      return withLive(addScore(state, live.teamId, clue.points), {
+        ...live,
+        phase: "done",
+        answeredBy: live.teamId,
+        timer: stopT(live.timer, ctx.now),
+      });
+    }
+    case "answerWrong":
+      if (live.phase !== "play") throw new GameError("Not in play");
+      return boardWrong(state, live, ctx, true);
+    case "steal": {
+      if (live.phase !== "steal") throw new GameError("Not offering a steal");
+      if (action.teamId === null) return withLive(state, { ...live, phase: "done" });
+      const teamId = requireTeam(m, action.teamId);
+      if (live.wrong.includes(teamId)) throw new GameError("That team already answered");
+      const { round, clue } = boardCell(state, live, ctx);
+      if (action.correct) {
+        return withLive(addScore(state, teamId, clue.points), {
+          ...live,
+          phase: "done",
+          answeredBy: teamId,
+        });
+      }
+      const negative = round.negative ?? "steals";
+      const next = negative === "none" ? state : addScore(state, teamId, -clue.points);
+      const wrong = [...live.wrong, teamId];
+      // Everyone has had a go: close the question.
+      const allTried = m.teamIds.every((t) => wrong.includes(t));
+      return withLive(next, { ...live, wrong, phase: allTried ? "done" : "steal" });
+    }
   }
 }

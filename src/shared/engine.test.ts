@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { timerDeadline, timerRemaining } from "./engine";
-import type { Action, ConnectionLive, StandardLive, VowelsLive, WallLive } from "./game";
-import { Game } from "./testkit";
+import type { Action, BoardLive, ConnectionLive, StandardLive, VowelsLive, WallLive } from "./game";
+import { content, Game } from "./testkit";
+import { buildView } from "./view";
 
 const zero = { a: 0, b: 0, c: 0 };
 
@@ -523,5 +524,80 @@ describe("match switching", () => {
     g.do({ type: "startMatch", matchId: prevMatch });
     expect(g.state.results[prevMatch]).toMatchObject({ a: 3 });
     expect(g.state.scores.a).toBe(0);
+  });
+});
+
+describe("category board", () => {
+  const live = (g: Game) => g.live as BoardLive;
+  const pick = (round: "board" | "boardAll" = "board") =>
+    Game.inRound(round).do({ type: "pickCell", category: 0, clue: 1 });
+
+  it("awards the cell's points to the team on turn and rotates the turn", () => {
+    const g = pick().do({ type: "answerCorrect" });
+    expect(g.scores.a).toBe(20);
+    expect(live(g)).toMatchObject({ phase: "done", answeredBy: "a" });
+    g.do({ type: "backToPick" }, { type: "pickCell", category: 1, clue: 0 });
+    expect(live(g).teamId).toBe("b");
+  });
+
+  it("rejects a used cell", () => {
+    const g = pick().do({ type: "answerCorrect" }, { type: "backToPick" });
+    expect(() => g.do({ type: "pickCell", category: 0, clue: 1 })).toThrow();
+  });
+
+  it("by default only penalises wrong steals, and lets several teams try", () => {
+    const g = pick().do({ type: "answerWrong" });
+    expect(g.scores.a).toBe(0);
+    expect(live(g).phase).toBe("steal");
+    expect(() => g.do({ type: "steal", teamId: "a", correct: true })).toThrow();
+    g.do({ type: "steal", teamId: "b", correct: false });
+    expect(g.scores.b).toBe(-20);
+    expect(live(g).phase).toBe("steal");
+    g.do({ type: "steal", teamId: "c", correct: true });
+    expect(g.scores.c).toBe(20);
+    expect(live(g)).toMatchObject({ phase: "done", answeredBy: "c" });
+  });
+
+  it("closes once every team has answered wrongly", () => {
+    const g = pick().do(
+      { type: "answerWrong" },
+      { type: "steal", teamId: "b", correct: false },
+      { type: "steal", teamId: "c", correct: false },
+    );
+    expect(live(g).phase).toBe("done");
+  });
+
+  it("negative 'all' also penalises the picking team; a timeout never does", () => {
+    const g = pick("boardAll").do({ type: "answerWrong" });
+    expect(g.scores.a).toBe(-20);
+    const t = pick("boardAll").tick(30_000).do({ type: "timerExpired" });
+    expect(live(t).phase).toBe("steal");
+    expect(t.scores.a).toBe(0);
+  });
+
+  it("marks the category played once all cells are used", () => {
+    const g = Game.inRound("board");
+    for (const clue of [0, 1]) {
+      g.do(
+        { type: "pickCell", category: 0, clue },
+        { type: "answerCorrect" },
+        { type: "backToPick" },
+      );
+    }
+    expect(g.state.played).toContain("b1");
+  });
+
+  it("hides the answer from the display until done", () => {
+    const g = pick();
+    const display = JSON.stringify(buildView(g.state, content, "display", g.now));
+    expect(display).not.toContain("Hardware answer 2");
+    expect(display).toContain("Hardware question 2");
+    expect(JSON.stringify(buildView(g.state, content, "host", g.now))).toContain(
+      "Hardware answer 2",
+    );
+    g.do({ type: "answerCorrect" });
+    expect(JSON.stringify(buildView(g.state, content, "display", g.now))).toContain(
+      "Hardware answer 2",
+    );
   });
 });

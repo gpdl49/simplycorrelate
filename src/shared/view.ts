@@ -12,6 +12,8 @@ import {
   type WallQuestion,
 } from "./content";
 import {
+  boardCategories,
+  boardCellKey,
   currentMatch,
   currentRound,
   roundQuestion,
@@ -117,7 +119,33 @@ export interface VowelsView {
   nextCategory?: string;
 }
 
-export type RoundView = StandardView | ConnectionView | WallView | VowelsView;
+export interface BoardCellView {
+  points: number;
+  used: boolean;
+}
+
+export interface BoardView {
+  type: "board";
+  phase: "pick" | "play" | "steal" | "done";
+  /** Columns in round order; a null name means the slot's question is missing. */
+  categories: { name: string | null; cells: BoardCellView[] }[];
+  cell: { category: number; clue: number } | null;
+  teamId: string | null;
+  wrong: string[];
+  answeredBy: string | null;
+  negative: "none" | "steals" | "all";
+  /** The selected question; `answer` only once done (host: always). */
+  current: {
+    category: string;
+    points: number;
+    prompt: string;
+    media?: Media;
+    answer?: string;
+  } | null;
+  timer: Timer | null;
+}
+
+export type RoundView = StandardView | ConnectionView | WallView | VowelsView | BoardView;
 
 export interface GameView {
   role: Role;
@@ -336,6 +364,35 @@ function roundView(
         if (next) v.nextCategory = next.category;
       }
       return v;
+    }
+    case "board": {
+      const cats = boardCategories(round, content);
+      const cat = live.cell ? cats[live.cell.category] : null;
+      const clue = live.cell && cat ? cat.clues[live.cell.clue] : undefined;
+      let current: BoardView["current"] = null;
+      if (cat && clue) {
+        current = { category: cat.category, points: clue.points, prompt: clue.prompt };
+        if (clue.media) current.media = clue.media;
+        if (host || live.phase === "done") current.answer = clue.answer;
+      }
+      return {
+        type: "board",
+        phase: live.phase,
+        categories: cats.map((c) => ({
+          name: c?.category ?? null,
+          cells: (c?.clues ?? []).map((cl, i) => ({
+            points: cl.points,
+            used: state.played.includes(boardCellKey(c!.id, i)),
+          })),
+        })),
+        cell: live.cell,
+        teamId: live.teamId,
+        wrong: live.wrong,
+        answeredBy: live.answeredBy,
+        negative: round.negative ?? "steals",
+        current,
+        timer: live.timer,
+      };
     }
   }
 }

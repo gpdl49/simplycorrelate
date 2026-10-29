@@ -72,6 +72,19 @@ export const QUESTIONS: Question[] = [
     category: "Web browsers",
     clues: [{ answer: "Firefox" }],
   },
+  ...["Hardware", "Internet"].map(
+    (name, n): Question => ({
+      id: `b${n + 1}`,
+      label: "",
+      type: "category",
+      category: name,
+      clues: [10, 20].map((points, i) => ({
+        prompt: `${name} question ${i + 1}`,
+        answer: `${name} answer ${i + 1}`,
+        points,
+      })),
+    }),
+  ),
 ];
 
 const rounds: Round[] = [
@@ -80,8 +93,18 @@ const rounds: Round[] = [
   { id: "r-seq", type: "sequence", title: "", questionIds: ["q1"] },
   { id: "r-wall", type: "wall", title: "", questionIds: ["w1"] },
   { id: "r-vow", type: "vowels", title: "", questionIds: ["v1", "v2"] },
+  { id: "r-board", type: "board", title: "", questionIds: ["b1", "b2"] },
+  { id: "r-board-all", type: "board", title: "", questionIds: ["b1", "b2"], negative: "all" },
 ];
-export const ROUND = { standard: 0, connection: 1, sequence: 2, wall: 3, vowels: 4 } as const;
+export const ROUND = {
+  standard: 0,
+  connection: 1,
+  sequence: 2,
+  wall: 3,
+  vowels: 4,
+  board: 5,
+  boardAll: 6,
+} as const;
 
 export const MATCH: Match = {
   id: "m1",

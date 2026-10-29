@@ -72,20 +72,50 @@ export const VowelsQuestionSchema = z.object({
   clues: z.array(VowelsClueSchema).min(1).max(4),
 });
 
+export const BoardClueSchema = z.object({
+  prompt: z.string().min(1),
+  answer: z.string().min(1),
+  media: MediaSchema.optional(),
+  points: z.number().int().positive(),
+});
+
+/** One column of a Jeopardy-style board: a category with questions of increasing value. */
+export const CategoryQuestionSchema = z.object({
+  ...base,
+  type: z.literal("category"),
+  category: z.string().min(1),
+  clues: z.array(BoardClueSchema).min(1).max(6),
+});
+
 export const QuestionSchema = z.discriminatedUnion("type", [
   StandardQuestionSchema,
   ConnectionQuestionSchema,
   WallQuestionSchema,
   VowelsQuestionSchema,
+  CategoryQuestionSchema,
 ]);
 export type Question = z.infer<typeof QuestionSchema>;
 export type StandardQuestion = z.infer<typeof StandardQuestionSchema>;
 export type ConnectionQuestion = z.infer<typeof ConnectionQuestionSchema>;
 export type WallQuestion = z.infer<typeof WallQuestionSchema>;
 export type VowelsQuestion = z.infer<typeof VowelsQuestionSchema>;
+export type CategoryQuestion = z.infer<typeof CategoryQuestionSchema>;
+export type BoardClue = z.infer<typeof BoardClueSchema>;
+
+/** Default value of the nth (0-based) question in a board category. */
+export function defaultBoardPoints(index: number): number {
+  return (index + 1) * 10;
+}
 export type QuestionType = Question["type"];
 
-export const ROUND_TYPES = ["standard", "connection", "sequence", "wall", "vowels"] as const;
+export const ROUND_TYPES = [
+  "standard",
+  "connection",
+  "sequence",
+  "wall",
+  "vowels",
+  "board",
+] as const;
 export type RoundType = (typeof ROUND_TYPES)[number];
 
 /** Which question type a round draws from. */
@@ -95,6 +125,7 @@ export const QUESTION_TYPE_FOR_ROUND: Record<RoundType, QuestionType> = {
   sequence: "connection",
   wall: "wall",
   vowels: "vowels",
+  board: "category",
 };
 
 export const ROUND_TYPE_LABELS: Record<RoundType, string> = {
@@ -103,6 +134,7 @@ export const ROUND_TYPE_LABELS: Record<RoundType, string> = {
   sequence: "Sequences",
   wall: "Connecting Wall",
   vowels: "Missing Vowels",
+  board: "Category Board",
 };
 
 export const DEFAULT_TIMER_SEC: Record<RoundType, number | null> = {
@@ -111,7 +143,12 @@ export const DEFAULT_TIMER_SEC: Record<RoundType, number | null> = {
   sequence: 40,
   wall: 150,
   vowels: 180,
+  board: 30,
 };
+
+/** Board rounds: which wrong answers cost the question's value. */
+export const NEGATIVE_MARKING = ["none", "steals", "all"] as const;
+export type NegativeMarking = (typeof NEGATIVE_MARKING)[number];
 
 export const RoundSchema = z.object({
   id: z.string().min(1),
@@ -120,6 +157,8 @@ export const RoundSchema = z.object({
   questionIds: z.array(z.string()).default([]),
   /** Overrides DEFAULT_TIMER_SEC; null disables the timer. */
   timerSec: z.number().int().positive().nullable().optional(),
+  /** Board rounds only; defaults to "steals". */
+  negative: z.enum(NEGATIVE_MARKING).optional(),
 });
 export type Round = z.infer<typeof RoundSchema>;
 

@@ -68,7 +68,19 @@ export interface VowelsLive {
   ended: boolean;
 }
 
-export type Live = StandardLive | ConnectionLive | WallLive | VowelsLive;
+export interface BoardLive {
+  type: "board";
+  phase: "pick" | "play" | "steal" | "done";
+  /** Selected cell: index into round.questionIds, and clue index within that category. */
+  cell: { category: number; clue: number } | null;
+  teamId: string | null;
+  /** Teams that answered the current cell wrongly. */
+  wrong: string[];
+  answeredBy: string | null;
+  timer: Timer | null;
+}
+
+export type Live = StandardLive | ConnectionLive | WallLive | VowelsLive | BoardLive;
 
 export type Screen = "holding" | "scoreboard" | "round" | "leaderboard";
 
@@ -125,6 +137,12 @@ export const ActionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("answerWrong") }),
   z.object({ type: z.literal("steal"), teamId: id.nullable(), correct: z.boolean() }),
   z.object({ type: z.literal("backToPick") }),
+  // Category board (answerCorrect/answerWrong/steal/backToPick are shared with Connections)
+  z.object({
+    type: z.literal("pickCell"),
+    category: z.number().int().min(0),
+    clue: z.number().int().min(0),
+  }),
   // Wall
   z.object({ type: z.literal("tapTile"), tileId: id }),
   z.object({ type: z.literal("resolveWall") }),
