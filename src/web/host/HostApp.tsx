@@ -6,6 +6,7 @@ import { formatMs, useTimerRemaining } from "../lib/timer";
 import { useGame } from "../lib/useGame";
 import { Login } from "./Login";
 import { MatchSheet } from "./MatchSheet";
+import { BoardPanel } from "./rounds/BoardPanel";
 import { ConnectionPanel } from "./rounds/ConnectionPanel";
 import { StandardPanel } from "./rounds/StandardPanel";
 import { VowelsPanel } from "./rounds/VowelsPanel";
@@ -112,6 +113,7 @@ function timerLive(r: RoundView | null): boolean {
   if (r.type === "connection" || r.type === "sequence" || r.type === "wall")
     return r.phase === "play";
   if (r.type === "vowels") return r.started && !r.ended;
+  if (r.type === "board") return r.phase === "play";
   return false;
 }
 
@@ -216,6 +218,9 @@ function Body({ view, act, openMatch }: { view: GameView; act: Act; openMatch: (
         break;
       case "vowels":
         panel = <VowelsPanel key={key} r={r} teams={teams} act={act} />;
+        break;
+      case "board":
+        panel = <BoardPanel key={key} r={r} teams={teams} turnTeam={turnTeam} act={act} />;
         break;
     }
   }
