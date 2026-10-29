@@ -1,6 +1,8 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "files": { "includes": ["**", "!dist", "!node_modules", "!data", "!.pnpm-store"] },
+  "files": {
+    "includes": ["**", "!dist", "!node_modules", "!data", "!.pnpm-store", "!pnpm-lock.yaml"]
+  },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "linter": {
     "enabled": true,

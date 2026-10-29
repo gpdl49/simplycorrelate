@@ -199,8 +199,13 @@ export function reduce(state: GameState, action: Action, ctx: Ctx): GameState {
     case "startMatch": {
       const m = content.matches.get(action.matchId);
       if (!m) throw new GameError("Unknown match");
+      // Keep the interrupted match's scores on the leaderboard.
+      const results = state.matchId
+        ? { ...state.results, [state.matchId]: state.scores }
+        : state.results;
       return {
         ...state,
+        results,
         matchId: m.id,
         screen: "scoreboard",
         roundIndex: null,
@@ -271,6 +276,7 @@ export function reduce(state: GameState, action: Action, ctx: Ctx): GameState {
       return reduceConnection(state, action, ctx);
     case "backToPick": {
       const live = requireLive(state, ["connection", "sequence", "wall"]);
+      if (live.phase !== "done") throw new GameError("Finish the current question first");
       const m = requireMatch(state, content);
       const next = { ...state, turn: (state.turn + 1) % m.teamIds.length };
       const round = currentRound(state, content)!;

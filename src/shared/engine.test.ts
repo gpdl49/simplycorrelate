@@ -190,7 +190,8 @@ describe("connections", () => {
     expect(live(g).teamId).toBe("b");
     g.do({ type: "answerCorrect" }, { type: "backToPick" }, { type: "pickSlot", slot: 2 });
     expect(live(g).teamId).toBe("c");
-    g.do({ type: "backToPick" });
+    expect(() => g.do({ type: "backToPick" })).toThrow();
+    g.do({ type: "answerCorrect" }, { type: "backToPick" });
     expect(g.state.turn).toBe(0);
   });
 });
@@ -512,5 +513,15 @@ describe("timers", () => {
     expect((Game.inRound("standard").live as StandardLive & { timer?: unknown }).timer).toBe(
       undefined,
     );
+  });
+});
+
+describe("match switching", () => {
+  it("keeps an interrupted match's scores in results", () => {
+    const g = Game.inRound("standard").do({ type: "adjustScore", teamId: "a", delta: 3 });
+    const prevMatch = g.state.matchId!;
+    g.do({ type: "startMatch", matchId: prevMatch });
+    expect(g.state.results[prevMatch]).toMatchObject({ a: 3 });
+    expect(g.state.scores.a).toBe(0);
   });
 });
