@@ -1,4 +1,4 @@
-# simplycorrelate — plan
+# quiz — plan
 
 A quiz runner in the style of Only Connect, built for Exun and run live on Saturday 31 Oct 2026. It has three views:
 

@@ -88,7 +88,7 @@ api.delete("/admin/matches/:id", (c) => {
 api.get("/admin/export", (c) => {
   c.header(
     "Content-Disposition",
-    `attachment; filename="simplycorrelate-${new Date().toISOString().slice(0, 10)}.json"`,
+    `attachment; filename="quiz-${new Date().toISOString().slice(0, 10)}.json"`,
   );
   return c.json(store.exportQuiz());
 });

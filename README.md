@@ -1,4 +1,4 @@
-# simplycorrelate
+# quiz
 
 An Only Connect–style quiz runner for Exun (DPS RK Puram's tech club). It runs Standard questions, Connections, Sequences, the Connecting Wall and Missing Vowels, for 2–6 teams per match.
 
@@ -94,7 +94,7 @@ Use this if the venue internet or Zitadel fails. **Rehearse it on Friday.**
      ```
 
 2. Import the exported JSON: open `http://localhost:8080/admin`, log in with the PIN and import the file, or run
-   `URL=http://localhost:8080 HOST_PIN=<pin> FILE=./simplycorrelate-YYYY-MM-DD.json pnpm seed:demo`.
+   `URL=http://localhost:8080 HOST_PIN=<pin> FILE=./quiz-YYYY-MM-DD.json pnpm seed:demo`.
    (This replaces all content on the laptop.)
 3. Open `http://localhost:8080/display` full-screen on the projector.
 4. Connect the phone to the same network: the venue LAN/Wi-Fi, or the laptop's or phone's hotspot. Find the laptop's LAN IP (macOS: `ipconfig getifaddr en0`; Linux: `hostname -I`; Windows: `ipconfig`) and open `http://<laptop-ip>:8080/host` on the phone. Enter the PIN.

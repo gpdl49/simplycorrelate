@@ -1,4 +1,4 @@
-# simplycorrelate
+# quiz
 
 Only Connect–style quiz runner for Exun (DPS RK Puram's tech club). Read PLAN.md for product scope.
 

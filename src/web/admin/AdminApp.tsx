@@ -20,7 +20,7 @@ export function AdminApp() {
     return (
       <div className="adm-center">
         <div className="adm-card adm-narrow">
-          <h1 className="adm-brand-title">simplycorrelate</h1>
+          <h1 className="adm-brand-title">quiz</h1>
           <Banner>
             {unauth ? "Not authorised." : `Could not reach the server: ${me.error.message}`}
           </Banner>
@@ -39,7 +39,7 @@ export function AdminApp() {
     ) : (
       <div className="adm-center">
         <div className="adm-card adm-narrow">
-          <h1 className="adm-brand-title">simplycorrelate</h1>
+          <h1 className="adm-brand-title">quiz</h1>
           <Banner>Not authorised.</Banner>
         </div>
       </div>
@@ -50,7 +50,7 @@ export function AdminApp() {
       <header className="adm-header">
         <div className="adm-brand">
           <span className="adm-logo">exun</span>
-          <span className="adm-brand-title">simplycorrelate</span>
+          <span className="adm-brand-title">quiz</span>
         </div>
         <nav className="adm-nav">
           <NavLink to="/admin/teams">Teams</NavLink>
@@ -108,7 +108,7 @@ function PinLogin() {
   return (
     <div className="adm-center">
       <form className="adm-card adm-narrow" onSubmit={submit}>
-        <h1 className="adm-brand-title">simplycorrelate</h1>
+        <h1 className="adm-brand-title">quiz</h1>
         <p>Enter the host PIN to manage the quiz.</p>
         <input
           className="adm-input"

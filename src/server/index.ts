@@ -95,9 +95,7 @@ const wss = new WebSocketServer({ noServer: true });
 const server = serve(
   { fetch: app.fetch, port: config.port, hostname: config.host, websocket: { server: wss } },
   (info) => {
-    console.log(
-      `simplycorrelate listening on http://${config.host}:${info.port} (auth: ${config.authMode})`,
-    );
+    console.log(`quiz listening on http://${config.host}:${info.port} (auth: ${config.authMode})`);
   },
 );
 

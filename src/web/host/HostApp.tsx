@@ -36,7 +36,7 @@ export function HostApp() {
   const [dismissed, setDismissed] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Host · simplycorrelate";
+    document.title = "Host · quiz";
   }, []);
   // A new error un-dismisses the toast; errors auto-hide after 6s.
   useEffect(() => {
