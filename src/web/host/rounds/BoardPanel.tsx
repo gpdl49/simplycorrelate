@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Team } from "../../../shared/content";
 import type { BoardView } from "../../../shared/view";
 import { type Act, ActionBar, Btn, Card, ConfirmBtn, haptic, TeamBtn } from "../ui";
-import { MediaThumb } from "./media";
+import { AnswerBox, MediaThumb } from "./media";
 
 function Tag({ team }: { team: Team | undefined }) {
   if (!team) return null;
@@ -95,13 +95,15 @@ export function BoardPanel({
       }
       right={<span className="h-board-pts">{pts}</span>}
     >
-      <p className="h-prompt">{cur.prompt}</p>
-      {cur.media && <MediaThumb media={cur.media} />}
+      {cur.prompt.trim() && <p className="h-prompt">{cur.prompt}</p>}
+      {cur.media && <MediaThumb media={cur.media} big={!cur.prompt.trim()} />}
       {cur.answer && (
-        <div className="h-answer h-answer-big">
-          <span className="h-answer-tag">Answer{r.phase === "done" ? " · on screen" : ""}</span>
-          <span>{cur.answer}</span>
-        </div>
+        <AnswerBox
+          className="h-answer-big"
+          tag={`Answer${r.phase === "done" ? " · on screen" : ""}`}
+          answer={cur.answer}
+          media={cur.answerMedia}
+        />
       )}
       {wrongTeams.length > 0 && (
         <p className="h-small h-board-wrong">✗ Wrong: {wrongTeams.map((t) => t.name).join(", ")}</p>

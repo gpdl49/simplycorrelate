@@ -510,6 +510,29 @@
   border-radius: 8px;
   align-self: flex-start;
 }
+.h-media-big {
+  max-height: 260px;
+  align-self: center;
+}
+.h-answer-words {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.h-answer-media {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.h-answer-thumb {
+  flex: none;
+  max-width: 96px;
+  max-height: 72px;
+  object-fit: contain;
+  border-radius: 6px;
+}
 .h-media-audio {
   color: var(--exun-sky);
   font-weight: 700;

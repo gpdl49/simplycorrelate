@@ -1,9 +1,51 @@
+import { useEffect, useState } from "react";
 import type { Media } from "../../shared/content";
 
-/** Image or audio attached to a question or clue. Audio is played by the host on the laptop. */
-export function MediaView({ media, className = "" }: { media: Media; className?: string }) {
+/** width / height of an image once it has loaded, or null (also for audio and while loading). */
+export function useImageRatio(media: Media | undefined): number | null {
+  const url = media?.kind === "image" ? media.url : null;
+  const [ratio, setRatio] = useState<{ url: string; r: number } | null>(null);
+  useEffect(() => {
+    if (!url) return;
+    let live = true;
+    const img = new Image();
+    img.onload = () => {
+      if (live && img.naturalWidth && img.naturalHeight)
+        setRatio({ url, r: img.naturalWidth / img.naturalHeight });
+    };
+    img.src = url;
+    return () => {
+      live = false;
+    };
+  }, [url]);
+  return url && ratio?.url === url ? ratio.r : null;
+}
+
+/**
+ * Image or audio attached to a question or clue. Audio is played by the host on the laptop.
+ * `fit`: the image scales (up as well as down) to the largest size that fits its parent, which
+ * must be a size container (`.d-fit`).
+ */
+export function MediaView({
+  media,
+  className = "",
+  fit = false,
+}: {
+  media: Media;
+  className?: string;
+  fit?: boolean;
+}) {
+  const r = useImageRatio(fit ? media : undefined);
   if (media.kind === "image") {
-    return <img className={`d-media-img ${className}`} src={media.url} alt="" />;
+    if (!fit) return <img className={`d-media-img ${className}`} src={media.url} alt="" />;
+    return (
+      <img
+        className={`d-media-img d-media-fit${r ? " is-sized" : ""} ${className}`}
+        src={media.url}
+        alt=""
+        style={r ? ({ "--ar": r } as React.CSSProperties) : undefined}
+      />
+    );
   }
   return (
     <div className={`d-media-audio ${className}`}>
@@ -20,5 +62,14 @@ export function MediaView({ media, className = "" }: { media: Media; className?:
       {/* biome-ignore lint/a11y/useMediaCaption: quiz audio clues have no captions */}
       <audio controls preload="auto" src={media.url} />
     </div>
+  );
+}
+
+/** Image (or audio) shown inside a revealed answer box. */
+export function AnswerMedia({ media }: { media: Media }) {
+  return (
+    <span className="d-answer-media">
+      <MediaView media={media} />
+    </span>
   );
 }

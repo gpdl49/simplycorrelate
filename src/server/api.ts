@@ -94,7 +94,9 @@ api.get("/admin/export", (c) => {
 });
 /** `?mode=merge` adds/updates by id; the default replaces all content. */
 api.post("/admin/import", async (c) =>
-  c.json(store.importQuiz(await c.req.json(), c.req.query("mode") === "merge" ? "merge" : "replace")),
+  c.json(
+    store.importQuiz(await c.req.json(), c.req.query("mode") === "merge" ? "merge" : "replace"),
+  ),
 );
 
 /** Multipart upload with a single `file` field; returns a Media object. */

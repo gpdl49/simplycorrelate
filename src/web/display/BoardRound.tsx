@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import type { BoardView, GameView } from "../../shared/view";
 import { type Mark, RoundFrame, TeamName, TimerClock } from "./chrome";
-import { MediaView } from "./Media";
+import { AnswerMedia, MediaView } from "./Media";
 
 const HEAD_H = 6.4;
 
@@ -131,14 +131,18 @@ function QuestionCard({
           <span className="d-bd-card-pts">{cur.points}</span>
         </div>
         <div className="d-bd-card-main">
-          <p
-            className="d-bd-prompt"
-            style={{ fontSize: promptSize(cur.prompt, !!cur.media, done) }}
-          >
-            {cur.prompt}
-          </p>
+          {cur.prompt.trim() && (
+            <p
+              className="d-bd-prompt"
+              style={{ fontSize: promptSize(cur.prompt, !!cur.media, done) }}
+            >
+              {cur.prompt}
+            </p>
+          )}
           {cur.media && (
-            <div className={`d-bd-media${done ? " is-small" : ""}`}>
+            <div
+              className={`d-bd-media${done ? " is-small" : ""}${cur.prompt.trim() ? "" : " is-solo"}`}
+            >
               <MediaView media={cur.media} />
             </div>
           )}
@@ -170,9 +174,14 @@ function QuestionCard({
           )}
           {done && (
             <div className="d-bd-done">
-              <div className={`d-bd-answer${round.answeredBy ? "" : " is-missed"}`}>
-                <span className="d-conn-answer-label">Answer</span>
-                <span className="d-conn-answer-text">{cur.answer}</span>
+              <div
+                className={`d-bd-answer${round.answeredBy ? "" : " is-missed"}${cur.answerMedia ? " has-media" : ""}`}
+              >
+                {cur.answerMedia && <AnswerMedia media={cur.answerMedia} />}
+                <span className="d-bd-answer-words">
+                  <span className="d-conn-answer-label">Answer</span>
+                  <span className="d-conn-answer-text">{cur.answer}</span>
+                </span>
               </div>
               <div className="d-conn-outcome">
                 {round.answeredBy ? (

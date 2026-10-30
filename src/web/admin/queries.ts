@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Match, Media, Question, QuizExport, Team } from "../../shared/content";
+import type { Match, Media, Question, Team } from "../../shared/content";
 import { api, type Me } from "../lib/api";
 
 /** Query keys and hooks for the admin REST API. Mutations refetch on success; nothing is optimistic. */
@@ -118,9 +118,23 @@ export function useLockMatch() {
   );
 }
 
+/** Counts returned by POST /admin/import. */
+export interface ImportResult {
+  mode: "replace" | "merge";
+  teams: number;
+  questions: number;
+  matches: number;
+  media: number;
+}
+
+/** merge adds/updates by id and keeps everything else; replace wipes all content first. */
 export function useImport() {
   return useApiMutation(
-    (data: unknown) => api<QuizExport>("/admin/import", { method: "POST", json: data }),
+    ({ data, mode }: { data: unknown; mode: ImportResult["mode"] }) =>
+      api<ImportResult>(`/admin/import${mode === "merge" ? "?mode=merge" : ""}`, {
+        method: "POST",
+        json: data,
+      }),
     [keys.teams, keys.questions, keys.matches],
   );
 }

@@ -51,6 +51,14 @@ function blankBoardClue(i: number): CategoryQuestion["clues"][number] {
 /** Extra checks the zod schema can't express. Returns issues keyed like zod paths. */
 export function extraIssues(q: Question): Issues {
   const map: Issues = new Map();
+  // Mirrors the schema's refine, which zod skips while other fields are invalid.
+  const noPrompt = "Add question text or an image";
+  if (q.type === "standard" && !q.prompt.trim() && !q.media) map.set("prompt", noPrompt);
+  if (q.type === "category") {
+    q.clues.forEach((c, i) => {
+      if (!c.prompt.trim() && !c.media) map.set(`clues.${i}.prompt`, noPrompt);
+    });
+  }
   if (q.type === "connection" || q.type === "sequence") {
     q.clues.forEach((c, i) => {
       if (!c.text.trim() && !c.media) map.set(`clues.${i}.text`, "Give the clue text or media");
@@ -72,7 +80,11 @@ function intOr(value: string): number {
 export function StandardForm({ q, set, issues }: FormProps<StandardQuestion>) {
   return (
     <>
-      <Field label="Question" error={issues.get("prompt")}>
+      <Field
+        label="Question"
+        error={issues.get("prompt")}
+        hint="Can be left empty if an image is attached (image-only question)."
+      >
         {(id) => (
           <textarea
             id={id}
@@ -124,7 +136,7 @@ export function StandardForm({ q, set, issues }: FormProps<StandardQuestion>) {
           )}
         </Field>
       </div>
-      <Field label="Image (optional)" error={issues.get("media")}>
+      <Field label="Image (optional)" error={issues.get("media") ?? issues.get("media.url")}>
         {() => (
           <MediaField
             value={q.media}
@@ -132,6 +144,22 @@ export function StandardForm({ q, set, issues }: FormProps<StandardQuestion>) {
             onChange={(media) => {
               const { media: _old, ...rest } = q;
               set(media ? { ...rest, media } : rest);
+            }}
+          />
+        )}
+      </Field>
+      <Field
+        label="Answer image (optional)"
+        error={issues.get("answerMedia") ?? issues.get("answerMedia.url")}
+        hint="Shown with the answer once it is revealed."
+      >
+        {() => (
+          <MediaField
+            value={q.answerMedia}
+            accept="image/*"
+            onChange={(answerMedia) => {
+              const { answerMedia: _old, ...rest } = q;
+              set(answerMedia ? { ...rest, answerMedia } : rest);
             }}
           />
         )}
@@ -554,6 +582,18 @@ export function CategoryForm({ q, set, issues }: FormProps<CategoryQuestion>) {
               }}
             />
             <ErrorText>{issues.get(`clues.${i}.media.url`)}</ErrorText>
+            <div className="adm-field">
+              <span className="adm-label">Answer image (optional, shown with the answer)</span>
+              <MediaField
+                value={c.answerMedia}
+                accept="image/*"
+                onChange={(answerMedia) => {
+                  const { answerMedia: _old, ...rest } = c;
+                  setClue(i, answerMedia ? { ...rest, answerMedia } : rest);
+                }}
+              />
+              <ErrorText>{issues.get(`clues.${i}.answerMedia.url`)}</ErrorText>
+            </div>
             <div className="adm-row">
               <button
                 type="button"

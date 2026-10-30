@@ -144,7 +144,7 @@ export function questionSummary(q: Question): string {
   const body = (() => {
     switch (q.type) {
       case "standard":
-        return `${q.prompt} → ${q.answer}`;
+        return `${q.prompt.trim() || "[image]"} → ${q.answer}`;
       case "connection":
       case "sequence":
         return `${q.clues.map((c) => c.text || `[${c.media?.kind ?? "?"}]`).join(" · ")} → ${q.connection}`;

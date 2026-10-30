@@ -1,7 +1,7 @@
 import type { Team } from "../../../shared/content";
 import type { StandardView } from "../../../shared/view";
 import { type Act, ActionBar, Btn, Card } from "../ui";
-import { MediaThumb } from "./media";
+import { AnswerBox, MediaThumb } from "./media";
 
 export function StandardPanel({ r, teams, act }: { r: StandardView; teams: Team[]; act: Act }) {
   return (
@@ -10,12 +10,13 @@ export function StandardPanel({ r, teams, act }: { r: StandardView; teams: Team[
         title={`Question ${r.index + 1} / ${r.total}`}
         right={r.label ? <span className="h-muted">{r.label}</span> : null}
       >
-        <p className="h-prompt">{r.prompt}</p>
-        {r.media && <MediaThumb media={r.media} />}
-        <div className="h-answer">
-          <span className="h-answer-tag">Answer{r.revealed ? " · on screen" : " · hidden"}</span>
-          <span>{r.answer}</span>
-        </div>
+        {r.prompt.trim() && <p className="h-prompt">{r.prompt}</p>}
+        {r.media && <MediaThumb media={r.media} big={!r.prompt.trim()} />}
+        <AnswerBox
+          tag={`Answer${r.revealed ? " · on screen" : " · hidden"}`}
+          answer={r.answer ?? ""}
+          media={r.answerMedia}
+        />
         <p className="h-muted h-small">
           {r.points} pt{r.points === 1 ? "" : "s"}
           {r.penalty > 0 ? ` · −${r.penalty} for a wrong answer` : ""}
