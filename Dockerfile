@@ -3,12 +3,14 @@
 # ---- build: install all deps, build the SPA and a fully bundled server ----
 FROM node:24-alpine AS build
 WORKDIR /app
-# Newer corepack so it knows the signing keys of current pnpm releases.
-RUN npm install -g corepack@latest && corepack enable
+ARG AUBE_VERSION=2.9.0
+RUN apk add --no-cache wget \
+  && wget -qO- "https://github.com/aubepkg/aube/releases/download/v${AUBE_VERSION}/aube-v${AUBE_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" \
+    | tar xz -C /usr/local/bin aube aubr
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN corepack install && pnpm install --frozen-lockfile
+RUN aube ci
 COPY . .
-RUN pnpm build
+RUN aube run --no-install build
 
 # ---- runtime: node + the build output only ----
 # The server is bundled into a single file (esbuild, no --packages=external),

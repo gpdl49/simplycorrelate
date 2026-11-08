@@ -87,7 +87,7 @@ app.get("*", (c) => {
     indexHtml ??= readFileSync(path.join(config.webDir, "index.html"), "utf8");
     return c.html(indexHtml);
   } catch {
-    return c.text("Web build not found; run `pnpm build` or use the Vite dev server.", 404);
+    return c.text("Web build not found; run `aube run build` or use the Vite dev server.", 404);
   }
 });
 

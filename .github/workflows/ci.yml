@@ -16,16 +16,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4 # version comes from package.json "packageManager"
-      - uses: actions/setup-node@v4
+      - uses: jdx/aube-action@v1
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
-      - run: pnpm lint
-      - run: pnpm test
-      - run: pnpm build
+          node-version: "24"
+      - run: aube ci
+      - run: aube run --no-install typecheck
+      - run: aube run --no-install lint
+      - run: aube run --no-install test
+      - run: aube run --no-install build
 
   image:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

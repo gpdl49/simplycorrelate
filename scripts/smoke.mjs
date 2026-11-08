@@ -119,7 +119,7 @@ check("admin 200 when authorised", (await status("/api/admin/teams", { headers }
 // Live game: start a match, play an action, undo it.
 const matches = await (await fetch(`${URL_}/api/admin/matches`, { headers })).json();
 if (!matches.length) {
-  console.log("(no matches; run `pnpm seed:demo` to test the live game)");
+  console.log("(no matches; run `aube run seed:demo` to test the live game)");
 } else {
   const host = await hostSession(headers);
   check("host WS gets host view", host.view()?.role === "host");
