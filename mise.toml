@@ -3,7 +3,6 @@ node = "24"
 aube = "2.9.0"
 hk = "2.11.1"
 jactionlint = "2.5.0"
-biome = "2.6.3"
 
 [tasks.setup]
 description = "Install JS dependencies and configure git hooks"
