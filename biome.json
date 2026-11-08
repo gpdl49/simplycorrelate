@@ -6,6 +6,7 @@
       "!dist",
       "!node_modules",
       "!data",
+      "!.aube",
       "!.pnpm-store",
       "!pnpm-lock.yaml",
       "!imports",

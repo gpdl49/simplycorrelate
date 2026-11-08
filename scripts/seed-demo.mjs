@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Imports fixtures/demo-quiz.json (DEMO content) into a running server, REPLACING all content
 // unless MODE=merge (add/update by id, keep everything else).
-// Usage: pnpm seed:demo   Env: URL (default http://localhost:8080), FILE (default the demo fixture),
+// Usage: aube run seed:demo   Env: URL (default http://localhost:8080), FILE (default the demo fixture),
 //   HOST_PIN (AUTH_MODE=pin: logs in first), COOKIE (sent as-is, e.g. an oauth2-proxy session).
 import { readFileSync } from "node:fs";
 

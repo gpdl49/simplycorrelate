@@ -1,0 +1,9 @@
+amends "package://github.com/jdx/hk/releases/download/v2.11.1/hk@2.11.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.11.1/hk@2.11.1#/Builtins.pkl"
+
+steps {
+  ["biome"] = (Builtins.biome) {
+    prefix = List("aube", "exec")
+  }
+  ["jactionlint"] = Builtins.jactionlint
+}
