@@ -14,12 +14,15 @@ The server keeps the only copy of the game state, persists it to SQLite on every
 
 ## Running locally
 
-Needs Node 24 and pnpm (`corepack enable`).
+Needs Node 24 and pnpm. With [mise](https://mise.jdx.dev/):
 
 ```sh
-pnpm install
+mise install
+mise run setup           # corepack enable + pnpm install (or: corepack enable && pnpm install)
 pnpm dev                 # server on :8080 + Vite on :5173 (open http://localhost:5173/display)
 ```
+
+Without mise: install Node 24, then `corepack enable` and `pnpm install`.
 
 Or the production build, everything on :8080:
 
