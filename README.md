@@ -69,6 +69,27 @@ docker run --rm -p 8080:8080 -v ./data:/data \
 
 The image runs as uid 1000 with no `node_modules` (the server is bundled into one file), and only writes to `/data`, so it works with a read-only root filesystem. On Linux, if `./data` isn't writable by uid 1000, add `--user "$(id -u):$(id -g)"`. CI pushes `ghcr.io/vidurb/simplycorrelate:main` and `:main-<shortsha>` on every push to `main`.
 
+## Image publishing
+
+After the checks pass on a `main` push, CI builds an OCI image for `linux/amd64`
+and `linux/arm64`. By default it publishes to `ghcr.io/vidurb/simplycorrelate`
+with `main` and `main-<short SHA>` tags.
+
+Set `CENTERPOINT_ZOT_SIMPLYCORRELATE=true` only after the Centerpoint runner and
+Zot access have been verified. The `simplycorrelate-publish` runner group must
+allow only `gpdl49/simplycorrelate/.github/workflows/ci.yml@main` and provide a
+`homestacks-centerpoint` runner. Restrict the `zot-publish` and `ghcr-publish`
+environments to `main`. Set `ZOT_CENTERPOINT_CA` and
+`ZOT_SIMPLYCORRELATE_PASSWORD` in `zot-publish`.
+
+In dual-publish mode, the Centerpoint job publishes the exported OCI index to
+Zot with an immutable UTC timestamp and short SHA tag. A GitHub-hosted job then
+copies that same index to both GHCR tags and checks their digests. The GHCR job
+also runs if the Zot job fails. Disable the variable to resume direct GHCR
+publishing. The `ghcr-publish` environment can provide `GHCR_PUBLISH_USER` and
+`GHCR_PUBLISH_TOKEN` if the workflow token lacks write access to the legacy
+package after a repository transfer.
+
 ## Offline fallback runbook
 
 Use this if the venue internet or Zitadel fails. **Rehearse it on Friday.**
