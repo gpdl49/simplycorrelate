@@ -67,7 +67,29 @@ docker run --rm -p 8080:8080 -v ./data:/data \
   -e AUTH_MODE=pin -e HOST_PIN=1234 -e SESSION_SECRET=change-me simplycorrelate
 ```
 
-The image runs as uid 1000 with no `node_modules` (the server is bundled into one file), and only writes to `/data`, so it works with a read-only root filesystem. On Linux, if `./data` isn't writable by uid 1000, add `--user "$(id -u):$(id -g)"`. CI pushes `ghcr.io/vidurb/simplycorrelate:main` and `:main-<shortsha>` on every push to `main`.
+The image runs as uid 1000 with no `node_modules` (the server is bundled into one file), and only writes to `/data`, so it works with a read-only root filesystem. On Linux, if `./data` isn't writable by uid 1000, add `--user "$(id -u):$(id -g)"`.
+
+## Image publishing
+
+After the checks pass on a `main` push, CI builds an OCI image for `linux/amd64`
+and `linux/arm64`. By default it publishes to `ghcr.io/gpdl49/simplycorrelate`
+with `main` and `main-<short SHA>` tags using the repository's `GITHUB_TOKEN`.
+Verify that both tags resolve to the build's digest and that the cluster
+credentials can pull the new package before updating deployments or Flux
+policies that use `ghcr.io/vidurb/simplycorrelate`.
+
+Set `CENTERPOINT_ZOT_SIMPLYCORRELATE=true` only after the Centerpoint runner and
+Zot access have been verified. The `simplycorrelate-publish` runner group must
+allow only `gpdl49/simplycorrelate/.github/workflows/ci.yml@main` and provide a
+`homestacks-centerpoint` runner. Restrict the `zot-publish` and `ghcr-publish`
+environments to `main`. Set `ZOT_CENTERPOINT_CA` and
+`ZOT_SIMPLYCORRELATE_PASSWORD` in `zot-publish`.
+
+In dual-publish mode, the Centerpoint job publishes the exported OCI index to
+Zot with an immutable UTC timestamp and short SHA tag. A GitHub-hosted job then
+copies that same index to both GHCR tags and checks their digests. The GHCR job
+also runs if the Zot job fails. Disable the variable to resume direct GHCR
+publishing.
 
 ## Offline fallback runbook
 
@@ -76,7 +98,7 @@ Use this if the venue internet or Zitadel fails. **Rehearse it on Friday.**
 **Before the event** (while prod works):
 
 1. Open `/admin` on prod and **export** the quiz JSON (Import/Export). Keep a copy on the projector laptop and on a USB stick. Re-export after any late edits.
-2. On the projector laptop, have either the image pulled (`docker pull ghcr.io/vidurb/simplycorrelate:main`) or a checkout with `aube ci` done, so nothing needs the internet.
+2. On the projector laptop, have either the image pulled (`docker pull ghcr.io/gpdl49/simplycorrelate:main` after verifying package access) or a checkout with `aube ci` done, so nothing needs the internet.
 
 **On the day:**
 
@@ -87,7 +109,7 @@ Use this if the venue internet or Zitadel fails. **Rehearse it on Friday.**
      mkdir -p data
      docker run --rm -p 8080:8080 -v ./data:/data \
        -e AUTH_MODE=pin -e HOST_PIN=<pin> -e SESSION_SECRET=<long random string> \
-       ghcr.io/vidurb/simplycorrelate:main
+       ghcr.io/gpdl49/simplycorrelate:main
      ```
    - or Node:
 
